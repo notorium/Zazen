@@ -81,7 +81,7 @@ public class MainActivity extends AppCompatActivity {
     public void pose(View v) {
 
         switch (getResources().getResourceEntryName(v.getId())) {
-            case "continue":
+            case "resume":
                 break;
             case "restart":
                 break;

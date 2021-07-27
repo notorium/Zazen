@@ -16,7 +16,7 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <Button
-            android:id="@+id/contenue"
+            android:id="@+id/resume"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:onClick="pose"
