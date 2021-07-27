@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="time">
+        <item>30秒</item>
+        <item>1分</item>
+        <item>5分</item>
+        <item>10分</item>
+        <item>30分</item>
+        <item>無制限</item>
+    </string-array>
+</resources>
