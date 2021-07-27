@@ -18,7 +18,7 @@ import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity {
     private TextView timerText, countdownText;
-    private View pose, tap;
+    private View pose, tapScreen;
     private FragmentManager fragmentManager;
     private boolean activityStart = false;
 
@@ -31,11 +31,12 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
         fragmentManager = getSupportFragmentManager();
         timerText = findViewById(R.id.timerText);
         countdownText = findViewById(R.id.countdownText);
         pose = findViewById(R.id.pose);
-        tap = findViewById(R.id.tapScreen);
+        tapScreen = findViewById(R.id.tapScreen);
         timerText.setText(dataFormat.format(countNumber));
         countdownText.setText("");
     }
@@ -47,7 +48,7 @@ public class MainActivity extends AppCompatActivity {
                 if (!activityStart) {
                     View view = findViewById(R.id.fragmentContainerView);
                     view.setVisibility(View.GONE);
-                    tap.setEnabled(false);
+                    tapScreen.setEnabled(false);
 //            Fragment fragment = fragmentManager.findFragmentById(R.id.fragmentContainerView);
 //            fragmentManager.beginTransaction().remove(fragment).commit();
                     activityStart = true;
@@ -65,7 +66,7 @@ public class MainActivity extends AppCompatActivity {
                     handler.postDelayed(() -> {
                         countdownText.setText("");
                         countDown.start();
-                        tap.setEnabled(true);
+                        tapScreen.setEnabled(true);
                     }, 5000);
                 }else{
                     pose.setVisibility(View.VISIBLE);
@@ -88,7 +89,6 @@ public class MainActivity extends AppCompatActivity {
             case "finish":
                 break;
             default:
-                System.out.println("aaaaa");
                 break;
         }
     }
