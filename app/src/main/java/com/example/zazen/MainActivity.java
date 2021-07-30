@@ -46,15 +46,14 @@ public class MainActivity extends AppCompatActivity {
     //画面タップ後に座禅スタート
     public void screenTap(View v) {
         if (!activityStart) {
-
-
-            //タップから3秒後にスタート
+            //3秒のカウントダウン
             countDown();
         } else {
             poseScreen.setVisibility(View.VISIBLE);
         }
     }
 
+    //タップから3秒後にスタート
     public void countDown() {
         countDown = new CountDown(countNumber, 10);
         startScreen.setVisibility(View.GONE);

@@ -16,8 +16,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <include
-        android:id="@+id/startScreen"
-        layout="@layout/main_fragment"
+        layout="@layout/start"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:layout_constraintBottom_toBottomOf="parent"
