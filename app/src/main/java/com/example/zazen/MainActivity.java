@@ -1,25 +1,22 @@
 package com.example.zazen;
 
-import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Handler;
 import android.view.View;
-import android.widget.Button;
-import android.widget.FrameLayout;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
 
 import java.text.SimpleDateFormat;
 import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity {
+    //View変数
     private TextView timerText, countdownText;
-    private View pose, tapScreen;
-    private FragmentManager fragmentManager;
+    private View poseScreen, tapScreen;
+
+    //初回スタート判定
     private boolean activityStart = false;
 
     private SimpleDateFormat dataFormat =
@@ -32,55 +29,44 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        fragmentManager = getSupportFragmentManager();
         timerText = findViewById(R.id.timerText);
         countdownText = findViewById(R.id.countdownText);
-        pose = findViewById(R.id.pose);
+        poseScreen = findViewById(R.id.poseScreen);
         tapScreen = findViewById(R.id.tapScreen);
         timerText.setText(dataFormat.format(countNumber));
         countdownText.setText("");
     }
 
     //画面タップ後に座禅スタート
-    public void onTap(View v) {
-        switch (getResources().getResourceEntryName(v.getId())) {
-            case "tapScreen":
-                if (!activityStart) {
-                    View view = findViewById(R.id.fragmentContainerView);
-                    view.setVisibility(View.GONE);
-                    tapScreen.setEnabled(false);
-//            Fragment fragment = fragmentManager.findFragmentById(R.id.fragmentContainerView);
-//            fragmentManager.beginTransaction().remove(fragment).commit();
-                    activityStart = true;
+    public void screenTap(View v) {
+        if (!activityStart) {
+            View view = findViewById(R.id.startScreen);
+            view.setVisibility(View.GONE);
+            tapScreen.setEnabled(false);
+            activityStart = true;
 
-                    //タップから3秒後にスタート
-                    CountDown countDown = new CountDown(countNumber, 10);
-                    final Handler handler = new Handler();
-                    handler.postDelayed(() -> countdownText.setText("3"), 1000);
-                    handler.postDelayed(() -> countdownText.setText("2"), 2000);
-                    handler.postDelayed(() -> countdownText.setText("1"), 3000);
-                    handler.postDelayed(() -> {
-                        timerText.setEnabled(true);
-                        countdownText.setText("Start!!");
-                    }, 4000);
-                    handler.postDelayed(() -> {
-                        countdownText.setText("");
-                        countDown.start();
-                        tapScreen.setEnabled(true);
-                    }, 5000);
-                }else{
-                    pose.setVisibility(View.VISIBLE);
-                }
-                break;
-            default:
-                break;
+            //タップから3秒後にスタート
+            CountDown countDown = new CountDown(countNumber, 10);
+            final Handler handler = new Handler();
+            handler.postDelayed(() -> countdownText.setText("3"), 1000);
+            handler.postDelayed(() -> countdownText.setText("2"), 2000);
+            handler.postDelayed(() -> countdownText.setText("1"), 3000);
+            handler.postDelayed(() -> {
+                timerText.setEnabled(true);
+                countdownText.setText("Start!!");
+            }, 4000);
+            handler.postDelayed(() -> {
+                countdownText.setText("");
+                countDown.start();
+                tapScreen.setEnabled(true);
+            }, 5000);
+        } else {
+            poseScreen.setVisibility(View.VISIBLE);
         }
-
-
     }
 
     public void pose(View v) {
-
+        //ポーズ
         switch (getResources().getResourceEntryName(v.getId())) {
             case "resume":
                 break;
