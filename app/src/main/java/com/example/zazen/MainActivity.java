@@ -24,6 +24,9 @@ public class MainActivity extends AppCompatActivity {
     //座禅開始判定
     private boolean activityStart = false;
 
+    //座禅終了判定
+    private boolean activityFinish = false;
+
     private SimpleDateFormat dataFormat =
             new SimpleDateFormat("mm:ss.SS", Locale.JAPAN);
 
@@ -38,7 +41,7 @@ public class MainActivity extends AppCompatActivity {
         timerText = findViewById(R.id.timerText);
         countdownText = findViewById(R.id.countdownText);
 
-        //resultButton=findViewById(R.id.resultButton);
+        resultButton = findViewById(R.id.resultButton);
 
         startScreen = findViewById(R.id.startScreen);
         poseScreen = findViewById(R.id.poseScreen);
@@ -50,10 +53,10 @@ public class MainActivity extends AppCompatActivity {
 
     //画面タップ後に座禅スタート
     public void screenTap(View v) {
-        if (!activityStart) {
+        if (!activityStart && !activityFinish) {
             //3秒のカウントダウン
             countDown();
-        } else {
+        } else if (activityStart && !activityFinish) {
             poseScreen.setVisibility(View.VISIBLE);
             tapScreen.setEnabled(false);
             countDown.cancel();
@@ -128,18 +131,26 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+
+    public void result(View v) {
+        Intent intent = new Intent(getApplicationContext(), ResultActivity.class);
+        startActivity(intent);
+    }
+
     //ホームボタン、タスクボタンタップ検知
     public void onUserLeaveHint() {
         //座禅強制終了
-        new AlertDialog.Builder(this)
-                .setCancelable(false)
-                .setMessage("座禅が中断されました")
-                .setPositiveButton("閉じる", (dialog, which) -> {
-                    countDown.cancel();
-                    activityStart = false;
-                    this.finish();
-                })
-                .show();
+        if (!activityFinish) {
+            new AlertDialog.Builder(this)
+                    .setCancelable(false)
+                    .setMessage("座禅が中断されました")
+                    .setPositiveButton("閉じる", (dialog, which) -> {
+                        countDown.cancel();
+                        activityStart = false;
+                        this.finish();
+                    })
+                    .show();
+        }
     }
 
     //戻るボタン処理
@@ -188,11 +199,12 @@ public class MainActivity extends AppCompatActivity {
         public void onFinish() {
             //タイマー終了
             activityStart = false;
+            activityFinish = true;
             startScreen.setVisibility(View.GONE);
-            tapScreen.setEnabled(false);
+            tapScreen.setVisibility(View.GONE);
             timerText.setText(dataFormat.format(0));
             countdownText.setText("終了!!");
-            //resultButton.setVisibility(View.VISIBLE);
+            resultButton.setVisibility(View.VISIBLE);
         }
 
         // インターバルで呼ばれる
