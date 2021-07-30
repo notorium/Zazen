@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:elevation="5dp"
-    android:background="@color/cardview_dark_background">
+    android:background="#80424242">
 
 
     <TextView
