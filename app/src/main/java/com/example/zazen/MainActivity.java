@@ -24,8 +24,8 @@ public class MainActivity extends AppCompatActivity {
     private SimpleDateFormat dataFormat =
             new SimpleDateFormat("mm:ss.SS", Locale.JAPAN);
 
-    private long countNumber = 5000;
-    private CountDown countDown = new CountDown(countNumber, 10);
+    private long countNumber = 10000;
+    private CountDown countDown;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,27 +46,33 @@ public class MainActivity extends AppCompatActivity {
     //画面タップ後に座禅スタート
     public void screenTap(View v) {
         if (!activityStart) {
-            startScreen.setVisibility(View.GONE);
-            tapScreen.setEnabled(false);
+
 
             //タップから3秒後にスタート
-            final Handler handler = new Handler();
-            handler.postDelayed(() -> countdownText.setText("3"), 1000);
-            handler.postDelayed(() -> countdownText.setText("2"), 2000);
-            handler.postDelayed(() -> countdownText.setText("1"), 3000);
-            handler.postDelayed(() -> {
-                timerText.setEnabled(true);
-                countdownText.setText("Start!!");
-            }, 4000);
-            handler.postDelayed(() -> {
-                countdownText.setText("");
-                countDown.start();
-                tapScreen.setEnabled(true);
-                activityStart = true;
-            }, 5000);
+            countDown();
         } else {
             poseScreen.setVisibility(View.VISIBLE);
         }
+    }
+
+    public void countDown() {
+        countDown = new CountDown(countNumber, 10);
+        startScreen.setVisibility(View.GONE);
+        tapScreen.setEnabled(false);
+        final Handler handler = new Handler();
+        handler.postDelayed(() -> countdownText.setText("3"), 1000);
+        handler.postDelayed(() -> countdownText.setText("2"), 2000);
+        handler.postDelayed(() -> countdownText.setText("1"), 3000);
+        handler.postDelayed(() -> {
+            timerText.setEnabled(true);
+            countdownText.setText("Start!!");
+        }, 4000);
+        handler.postDelayed(() -> {
+            countdownText.setText("");
+            countDown.start();
+            tapScreen.setEnabled(true);
+            activityStart = true;
+        }, 5000);
     }
 
     public void pose(View v) {
@@ -75,6 +81,8 @@ public class MainActivity extends AppCompatActivity {
         switch (getResources().getResourceEntryName(v.getId())) {
             case "resume":
                 //再開
+                poseScreen.setVisibility(View.GONE);
+                countDown();
                 break;
             case "restart":
                 //リスタート
@@ -149,6 +157,8 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onFinish() {
             //タイマー終了
+            startScreen.setVisibility(View.GONE);
+            tapScreen.setEnabled(false);
             timerText.setText(dataFormat.format(0));
             countdownText.setText("終了!!");
         }
