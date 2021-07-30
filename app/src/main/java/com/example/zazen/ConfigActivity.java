@@ -98,6 +98,7 @@ public class ConfigActivity extends AppCompatActivity {
                 .setPositiveButton("はい", (dialog, which) -> {
                     Intent intent = new Intent(getApplicationContext(), MainActivity.class);
                     startActivity(intent);
+                    this.finish();
                 })
                 .setNegativeButton("いいえ", null)
                 .show();

@@ -50,6 +50,8 @@ public class MainActivity extends AppCompatActivity {
             countDown();
         } else {
             poseScreen.setVisibility(View.VISIBLE);
+            countDown.cancel();
+            activityStart = false;
         }
     }
 
@@ -76,7 +78,6 @@ public class MainActivity extends AppCompatActivity {
 
     public void pose(View v) {
         //ポーズ
-        countDown.cancel();
         switch (getResources().getResourceEntryName(v.getId())) {
             case "resume":
                 //再開
@@ -108,6 +109,7 @@ public class MainActivity extends AppCompatActivity {
                         .setPositiveButton("はい", (dialog, which) -> {
                             Intent intent = new Intent(getApplicationContext(), StartActivity.class);
                             startActivity(intent);
+                            this.finish();
                         })
                         .setNegativeButton("いいえ", null)
                         .show();
@@ -117,9 +119,23 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    public void onUserLeaveHint() {
+        new AlertDialog.Builder(this)
+                .setCancelable(false)
+                .setMessage("座禅が中断されました")
+                .setPositiveButton("閉じる", (dialog, which) ->{
+                    countDown.cancel();
+                    activityStart = false;
+                    this.finish();
+                })
+                .show();
+    }
+
     public void onBackPressed() {
         if (activityStart) {
             poseScreen.setVisibility(View.VISIBLE);
+            countDown.cancel();
+            activityStart = false;
         }
     }
 
@@ -156,6 +172,7 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onFinish() {
             //タイマー終了
+            activityStart = false;
             startScreen.setVisibility(View.GONE);
             tapScreen.setEnabled(false);
             timerText.setText(dataFormat.format(0));
