@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Handler;
 import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AlertDialog;
@@ -14,11 +15,13 @@ import java.text.SimpleDateFormat;
 import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity {
+
     //View変数
     private TextView timerText, countdownText;
+    private Button resultButton;
     private View startScreen, poseScreen, tapScreen;
 
-    //初回スタート判定
+    //座禅開始判定
     private boolean activityStart = false;
 
     private SimpleDateFormat dataFormat =
@@ -34,6 +37,8 @@ public class MainActivity extends AppCompatActivity {
 
         timerText = findViewById(R.id.timerText);
         countdownText = findViewById(R.id.countdownText);
+
+        //resultButton=findViewById(R.id.resultButton);
 
         startScreen = findViewById(R.id.startScreen);
         poseScreen = findViewById(R.id.poseScreen);
@@ -61,15 +66,15 @@ public class MainActivity extends AppCompatActivity {
         countDown = new CountDown(countNumber, 10);
         startScreen.setVisibility(View.GONE);
         tapScreen.setEnabled(false);
-        final Handler handler = new Handler();
-        handler.postDelayed(() -> countdownText.setText("3"), 1000);
-        handler.postDelayed(() -> countdownText.setText("2"), 2000);
-        handler.postDelayed(() -> countdownText.setText("1"), 3000);
-        handler.postDelayed(() -> {
+        final Handler countdownHandler = new Handler();
+        countdownHandler.postDelayed(() -> countdownText.setText("3"), 1000);
+        countdownHandler.postDelayed(() -> countdownText.setText("2"), 2000);
+        countdownHandler.postDelayed(() -> countdownText.setText("1"), 3000);
+        countdownHandler.postDelayed(() -> {
             timerText.setEnabled(true);
             countdownText.setText("Start!!");
         }, 4000);
-        handler.postDelayed(() -> {
+        countdownHandler.postDelayed(() -> {
             countdownText.setText("");
             countDown.start();
             tapScreen.setEnabled(true);
@@ -77,16 +82,17 @@ public class MainActivity extends AppCompatActivity {
         }, 5000);
     }
 
+    //ポーズ画面
     public void pose(View v) {
-        //ポーズ
         switch (getResources().getResourceEntryName(v.getId())) {
             case "resume":
                 //再開
                 poseScreen.setVisibility(View.GONE);
                 countDown();
                 break;
+
             case "restart":
-                //リスタート
+                //座禅やり直し
                 new AlertDialog.Builder(this)
                         .setCancelable(false)
                         .setMessage("同じ設定のままやり直しますか？")
@@ -102,8 +108,9 @@ public class MainActivity extends AppCompatActivity {
                         .setNegativeButton("いいえ", null)
                         .show();
                 break;
+
             case "finish":
-                //中断
+                //座禅中断
                 new AlertDialog.Builder(this)
                         .setCancelable(false)
                         .setMessage("座禅を中断しますか？")
@@ -115,16 +122,19 @@ public class MainActivity extends AppCompatActivity {
                         .setNegativeButton("いいえ", null)
                         .show();
                 break;
+
             default:
                 break;
         }
     }
 
+    //ホームボタン、タスクボタンタップ検知
     public void onUserLeaveHint() {
+        //座禅強制終了
         new AlertDialog.Builder(this)
                 .setCancelable(false)
                 .setMessage("座禅が中断されました")
-                .setPositiveButton("閉じる", (dialog, which) ->{
+                .setPositiveButton("閉じる", (dialog, which) -> {
                     countDown.cancel();
                     activityStart = false;
                     this.finish();
@@ -132,8 +142,10 @@ public class MainActivity extends AppCompatActivity {
                 .show();
     }
 
+    //戻るボタン処理
     public void onBackPressed() {
         if (activityStart) {
+            //画面タップ有効時、ポーズ画面へ遷移
             poseScreen.setVisibility(View.VISIBLE);
             tapScreen.setEnabled(false);
             countDown.cancel();
@@ -141,6 +153,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    //カウントダウンタイマー
     class CountDown extends CountDownTimer {
 
         CountDown(long millisInFuture, long countDownInterval) {
@@ -179,6 +192,7 @@ public class MainActivity extends AppCompatActivity {
             tapScreen.setEnabled(false);
             timerText.setText(dataFormat.format(0));
             countdownText.setText("終了!!");
+            //resultButton.setVisibility(View.VISIBLE);
         }
 
         // インターバルで呼ばれる
