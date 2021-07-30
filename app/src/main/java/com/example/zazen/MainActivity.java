@@ -1,11 +1,13 @@
 package com.example.zazen;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Handler;
 import android.view.View;
 import android.widget.TextView;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import java.text.SimpleDateFormat;
@@ -14,7 +16,7 @@ import java.util.Locale;
 public class MainActivity extends AppCompatActivity {
     //View変数
     private TextView timerText, countdownText;
-    private View poseScreen, tapScreen;
+    private View startScreen, poseScreen, tapScreen;
 
     //初回スタート判定
     private boolean activityStart = false;
@@ -23,6 +25,7 @@ public class MainActivity extends AppCompatActivity {
             new SimpleDateFormat("mm:ss.SS", Locale.JAPAN);
 
     private long countNumber = 5000;
+    private CountDown countDown = new CountDown(countNumber, 10);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,8 +34,11 @@ public class MainActivity extends AppCompatActivity {
 
         timerText = findViewById(R.id.timerText);
         countdownText = findViewById(R.id.countdownText);
+
+        startScreen = findViewById(R.id.startScreen);
         poseScreen = findViewById(R.id.poseScreen);
         tapScreen = findViewById(R.id.tapScreen);
+
         timerText.setText(dataFormat.format(countNumber));
         countdownText.setText("");
     }
@@ -40,13 +46,10 @@ public class MainActivity extends AppCompatActivity {
     //画面タップ後に座禅スタート
     public void screenTap(View v) {
         if (!activityStart) {
-            View view = findViewById(R.id.startScreen);
-            view.setVisibility(View.GONE);
+            startScreen.setVisibility(View.GONE);
             tapScreen.setEnabled(false);
-            activityStart = true;
 
             //タップから3秒後にスタート
-            CountDown countDown = new CountDown(countNumber, 10);
             final Handler handler = new Handler();
             handler.postDelayed(() -> countdownText.setText("3"), 1000);
             handler.postDelayed(() -> countdownText.setText("2"), 2000);
@@ -59,6 +62,7 @@ public class MainActivity extends AppCompatActivity {
                 countdownText.setText("");
                 countDown.start();
                 tapScreen.setEnabled(true);
+                activityStart = true;
             }, 5000);
         } else {
             poseScreen.setVisibility(View.VISIBLE);
@@ -67,15 +71,48 @@ public class MainActivity extends AppCompatActivity {
 
     public void pose(View v) {
         //ポーズ
+        countDown.cancel();
         switch (getResources().getResourceEntryName(v.getId())) {
             case "resume":
+                //再開
                 break;
             case "restart":
+                //リスタート
+                new AlertDialog.Builder(this)
+                        .setCancelable(false)
+                        .setMessage("同じ設定のままやり直しますか？")
+                        .setPositiveButton("はい", (dialog, which) -> {
+                            Intent intent = getIntent();
+                            overridePendingTransition(0, 0);
+                            intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+                            finish();
+
+                            overridePendingTransition(0, 0);
+                            startActivity(intent);
+                        })
+                        .setNegativeButton("いいえ", null)
+                        .show();
                 break;
             case "finish":
+                //中断
+                new AlertDialog.Builder(this)
+                        .setCancelable(false)
+                        .setMessage("座禅を中断しますか？")
+                        .setPositiveButton("はい", (dialog, which) -> {
+                            Intent intent = new Intent(getApplicationContext(), StartActivity.class);
+                            startActivity(intent);
+                        })
+                        .setNegativeButton("いいえ", null)
+                        .show();
                 break;
             default:
                 break;
+        }
+    }
+
+    public void onBackPressed() {
+        if (activityStart) {
+            poseScreen.setVisibility(View.VISIBLE);
         }
     }
 
@@ -124,10 +161,11 @@ public class MainActivity extends AppCompatActivity {
             //long ss = millisUntilFinished / 1000 % 60;
             //long ms = millisUntilFinished - ss * 1000 - mm * 1000 * 60;
             //timerText.setText(String.format("%1$02d:%2$02d.%3$03d", mm, ss, ms));
-
+            countNumber = millisUntilFinished;
             timerText.setText(dataFormat.format(millisUntilFinished));
         }
     }
+
 
 }
 
