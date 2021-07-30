@@ -50,6 +50,7 @@ public class MainActivity extends AppCompatActivity {
             countDown();
         } else {
             poseScreen.setVisibility(View.VISIBLE);
+            tapScreen.setEnabled(false);
             countDown.cancel();
             activityStart = false;
         }
@@ -134,6 +135,7 @@ public class MainActivity extends AppCompatActivity {
     public void onBackPressed() {
         if (activityStart) {
             poseScreen.setVisibility(View.VISIBLE);
+            tapScreen.setEnabled(false);
             countDown.cancel();
             activityStart = false;
         }
