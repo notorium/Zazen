@@ -1,6 +1,10 @@
 package com.example.zazen;
 
 import android.content.Intent;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Handler;
@@ -12,10 +16,14 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 
+import java.io.File;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements SensorEventListener {
 
     //View変数
     private TextView timerText, countdownText;
@@ -34,8 +42,57 @@ public class MainActivity extends AppCompatActivity {
     private long countNumber = 10000;
     private CountDown countDown;
 
+    //センサー変数
+    static SensorManager manager;
+    private int x = 0, y = 0, z = 0;
+    private StringBuilder data;
+
+    //THRESHOLD ある値以上を検出するための閾値
+    protected final static double THRESHOLD = 1.0;
+    protected final static double THRESHOLD_MIN = 1;
+
+    //low pass filter alpha ローパスフィルタのアルファ値
+    protected final static float alpha = (float) 0.8;
+
+    //端末が実際に取得した加速度値。重力加速度も含まれる
+    private float[] currentOrientationValues = {0.0f, 0.0f, 0.0f};
+    //ローパス、ハイパスフィルタ後の加速度値
+    private float[] currentAccelerationValues = {0.0f, 0.0f, 0.0f};
+
+    //diff 差分
+    private float dx = 0.0f;
+    private float dy = 0.0f;
+    private float dz = 0.0f;
+
+    //previous data 1つ前の値
+    private float old_x = 0.0f;
+    private float old_y = 0.0f;
+    private float old_z = 0.0f;
+
+    //ベクトル量
+    private double vectorSize = 0;
+
+    //カウンタ
+    long counter = 0;
+
+    //一回目のゆれを省くカウントフラグ
+    boolean counted = false;
+
+    // X軸加速方向
+    boolean vecx = true;
+    // Y軸加速方向
+    boolean vecy = true;
+    // Z軸加速方向
+    boolean vecz = true;
+
+
+    //ノイズ対策
+    boolean noiseflg = true;
+    //ベクトル量(最大値)
+    private double vectorSize_max = 0;
+
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
@@ -53,6 +110,8 @@ public class MainActivity extends AppCompatActivity {
 
         timerText.setText(dataFormat.format(countNumber));
         countdownText.setText("");
+
+        manager = (SensorManager) getSystemService(SENSOR_SERVICE);
     }
 
     //画面タップ後に座禅スタート
@@ -144,7 +203,7 @@ public class MainActivity extends AppCompatActivity {
     //ホームボタン、タスクボタンタップ検知
     public void onUserLeaveHint() {
         //座禅強制終了
-        if (!activityFinish) {
+        if (!activityFinish && activityStart) {
             new AlertDialog.Builder(this)
                     .setCancelable(false)
                     .setMessage("座禅が中断されました")
@@ -166,6 +225,144 @@ public class MainActivity extends AppCompatActivity {
             countDown.cancel();
             activityStart = false;
         }
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        // Listenerの登録解除
+        manager.unregisterListener(this);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        // Listenerの登録
+        List<android.hardware.Sensor> sensors = manager.getSensorList(android.hardware.Sensor.TYPE_ROTATION_VECTOR);
+        List<android.hardware.Sensor> sensors2 = manager.getSensorList(android.hardware.Sensor.TYPE_ACCELEROMETER);
+        if (sensors.size() > 0) {
+            android.hardware.Sensor s = sensors.get(0);
+            android.hardware.Sensor s2 = sensors2.get(0);
+            manager.registerListener(this, s, SensorManager.SENSOR_DELAY_NORMAL);
+            manager.registerListener(this, s2, SensorManager.SENSOR_DELAY_NORMAL);
+        }
+    }
+
+    public void onAccuracyChanged(android.hardware.Sensor sensor, int accuracy) {
+// TODO Auto-generated method stub
+    }
+
+    public void onSensorChanged(SensorEvent event) {
+// TODO Auto-generated method stub
+        float[] vector;
+        float[] gyro;
+
+        /*case Sensor.TYPE_ROTATION_VECTOR:
+                vector = event.values.clone();
+                int vx = (int) Math.abs(Math.floor(vector[0] / 7 * 500));
+                int vy = (int) Math.abs(Math.floor(vector[1] / 7 * 500));
+                int vz = (int) Math.abs(Math.floor(vector[2] * 100));
+                sum += Math.abs(vx - x) > 0 ? 1 : 0;
+                sum += Math.abs(vy - y) > 0 ? 1 : 0;
+                //sum += Math.abs(vz - z) > 0 ? 1 : 0;
+                x = vx;
+                y = vy;
+                z = vz;
+                String str = "ジャイロセンサー値:"
+                        + "\nX軸中心:" + String.format("%3d", vx)
+                        + "\nY軸中心:" + String.format("%3d", vy)
+                        + "\nZ軸中心:" + String.format("%3d", vz)
+                        + "\n累計:" + String.format("%d", sum);
+                values.setText(str);*/
+        if (event.sensor.getType() == android.hardware.Sensor.TYPE_ACCELEROMETER) {
+            gyro = event.values.clone();
+            // 取得 Acquiring data
+
+            // ローパスフィルタで重力値を抽出
+            currentOrientationValues[0] = event.values[0] * 0.2f + currentOrientationValues[0] * (1.0f - 0.2f);
+            currentOrientationValues[1] = event.values[1] * 0.2f + currentOrientationValues[1] * (1.0f - 0.2f);
+            currentOrientationValues[2] = event.values[2] * 0.2f + currentOrientationValues[2] * (1.0f - 0.2f);
+
+            // 重力の値を省く
+            currentAccelerationValues[0] = event.values[0] - currentOrientationValues[0];
+            currentAccelerationValues[1] = event.values[1] - currentOrientationValues[1];
+            currentAccelerationValues[2] = event.values[2] - currentOrientationValues[2];
+
+            // ベクトル値を求めるために差分を計算
+            dx = currentAccelerationValues[0] - old_x;
+            dy = currentAccelerationValues[1] - old_y;
+            dz = currentAccelerationValues[2] - old_z;
+//            dx = event.values[0] - old_x;
+//            dy = event.values[1] - old_y;
+//            dz = event.values[2] - old_z;
+            vectorSize = Math.sqrt(dx * dx + dy * dy + dz * dz);
+            counter++;
+
+            // 一回目はノイズになるから省く
+            if (noiseflg) {
+                noiseflg = false;
+            } else {
+                int fvector = (int) Math.abs(vectorSize * 1000);
+                int fdx = (int) Math.abs(dx * 1000);
+                int fdy = (int) Math.abs(dy * 1000);
+                int fdz = (int) Math.abs(dz * 1000);
+
+                SimpleDateFormat DF = new SimpleDateFormat("HH:mm:ss.SSS", Locale.JAPAN);
+                String date = DF.format(new Date());
+                System.out.println(date + "," + fdx + "," + fdy + "," + fdz + "," + fvector);
+                //datalist.add(date + "," + fdx + "," + fdy + "," + fdz + "," + fvector + "\n");
+                //datalist.add(date + "," + dx + "," + dy + "," + dz + "," + vectorSize + "\n");
+                if (true/*fvector > 100 && dz <0.0f */) {
+                    if (counted) {
+
+                        /*String str = "ジャイロセンサー値:"
+                                + "\nX軸中心:" + String.format("%d", fdx)
+                                + "\nY軸中心:" + String.format("%d", fdy)
+                                + "\nZ軸中心:" + String.format("%d", fdz)
+                                + "\n累計:" + String.format("%d", fvector);
+                        values.setText(str);*/
+
+                        counted = false;
+                        // System.out.println("count is "+counter);
+                        // 最大値なら格納
+                        if (vectorSize > vectorSize_max) {
+                            vectorSize_max = vectorSize;
+                        }
+                    } else {
+                        counted = true;
+                    }
+
+                }
+            }
+                /*System.out.println("x:" + Math.abs(Math.floor(gyro[0] * 10000)));
+                System.out.println("y:" + Math.abs(Math.floor(gyro[1] * 10000)));
+                System.out.println("z:" + Math.abs(Math.floor(gyro[2] * 10000)));*/
+        } else if (event.sensor.getType() == android.hardware.Sensor.TYPE_ROTATION_VECTOR) {
+            vector = event.values.clone();
+            int vx = (int) Math.abs(Math.floor(vector[0] / 7 * 500));
+            int vy = (int) Math.abs(Math.floor(vector[1] / 7 * 500));
+            int vz = (int) Math.abs(Math.floor(vector[2] * 100));
+            x = vx;
+            y = vy;
+            z = vz;
+            String str = "ジャイロセンサー値:"
+                    + "\nX軸中心:" + String.format("%f", vector[0] * 180 * Math.PI)
+                    + "\nY軸中心:" + String.format("%f", vector[1] * 180 * Math.PI)
+                    + "\nZ軸中心:" + String.format("%f", vector[2] * 180 * Math.PI);
+        }
+
+
+        //if (event.sensor.getType() == Sensor.TYPE_ROTATION_VECTOR) {
+
+
+        //} else if (event.sensor.getType() == Sensor.TYPE_GYROSCOPE) {
+            /*str += "\nジャイロセンサー値:"
+                    + "\nX軸中心:" + String.format("%3d", event.values[0])
+                    + "\nY軸中心:" + String.format("%3d", event.values[1])
+                    + "\nZ軸中心:" + String.format("%3d", event.values[2])
+                    + "\n累計:" + String.format("%d", sum);*/
+
+
     }
 
     //カウントダウンタイマー
@@ -223,7 +420,6 @@ public class MainActivity extends AppCompatActivity {
             timerText.setText(dataFormat.format(millisUntilFinished));
         }
     }
-
 
 }
 
