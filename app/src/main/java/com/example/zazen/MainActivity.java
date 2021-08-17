@@ -8,6 +8,7 @@ import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Handler;
+import android.os.PowerManager;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -23,7 +24,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-public class MainActivity extends AppCompatActivity implements SensorEventListener {
+public class MainActivity extends AppCompatActivity implements SensorEventListener{
 
     //View変数
     private TextView timerText, countdownText;
@@ -36,10 +37,14 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     //座禅終了判定
     private boolean activityFinish = false;
 
+    private boolean activityPose = true;
+    //データフォーマット
     private SimpleDateFormat dataFormat =
             new SimpleDateFormat("mm:ss.SS", Locale.JAPAN);
 
-    private long countNumber = 10000;
+
+    private long[] countNumberList = {180000, 300000, 600000, 1800000, 3600000, 0};
+    private long countNumber = countNumberList[ConfigActivity.config_value.getInt("SeekValue", 0)];
     private CountDown countDown;
 
     //センサー変数
@@ -108,6 +113,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         poseScreen = findViewById(R.id.poseScreen);
         tapScreen = findViewById(R.id.tapScreen);
 
+        //countNumber = countNumberList[ConfigActivity.config_value.getInt("SeekValue", 0)];
         timerText.setText(dataFormat.format(countNumber));
         countdownText.setText("");
 
@@ -124,6 +130,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             tapScreen.setEnabled(false);
             countDown.cancel();
             activityStart = false;
+            activityPose = true;
         }
     }
 
@@ -132,6 +139,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         countDown = new CountDown(countNumber, 10);
         startScreen.setVisibility(View.GONE);
         tapScreen.setEnabled(false);
+        activityPose = false;
         final Handler countdownHandler = new Handler();
         countdownHandler.postDelayed(() -> countdownText.setText("3"), 1000);
         countdownHandler.postDelayed(() -> countdownText.setText("2"), 2000);
@@ -150,6 +158,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
     //ポーズ画面
     public void pose(View v) {
+
         switch (getResources().getResourceEntryName(v.getId())) {
             case "resume":
                 //再開
@@ -203,7 +212,9 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     //ホームボタン、タスクボタンタップ検知
     public void onUserLeaveHint() {
         //座禅強制終了
-        if (!activityFinish && activityStart) {
+        View decor = getWindow().getDecorView();
+        decor.setSystemUiVisibility(View.SYSTEM_UI_FLAG_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_LAYOUT_STABLE | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
+        if (!activityFinish && !activityPose) {
             new AlertDialog.Builder(this)
                     .setCancelable(false)
                     .setMessage("座禅が中断されました")
@@ -218,7 +229,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
     //戻るボタン処理
     public void onBackPressed() {
-        if (activityStart) {
+        if (activityStart && !activityFinish) {
             //画面タップ有効時、ポーズ画面へ遷移
             poseScreen.setVisibility(View.VISIBLE);
             tapScreen.setEnabled(false);
@@ -227,6 +238,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         }
     }
 
+    //ジャイロストップ
     @Override
     public void onStop() {
         super.onStop();
@@ -234,6 +246,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         manager.unregisterListener(this);
     }
 
+    //ジャイロ開始
     @Override
     public void onResume() {
         super.onResume();
@@ -252,6 +265,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 // TODO Auto-generated method stub
     }
 
+    //センサイベント発生
     public void onSensorChanged(SensorEvent event) {
 // TODO Auto-generated method stub
         float[] vector;

@@ -40,6 +40,9 @@ public class ConfigActivity extends AppCompatActivity {
         setTime.setProgress(config_value.getInt("SeekValue", 0));
         setGyro.setChecked(config_value.getBoolean("GyroChecked", false));
         setDevice.check(config_value.getInt("Device", R.id.radioButton4));
+        if(config_value.getBoolean("GyroChecked", false)){
+            Dset2.setEnabled(false);
+        }
 
         //時間設定(シークバー)
         setTime.setOnSeekBarChangeListener(
