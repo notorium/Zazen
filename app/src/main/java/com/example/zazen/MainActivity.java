@@ -1,14 +1,13 @@
 package com.example.zazen;
 
 import android.content.Intent;
-import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Handler;
-import android.os.PowerManager;
+import android.os.Looper;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -17,14 +16,14 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 
-import java.io.File;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.Timer;
+import java.util.TimerTask;
 
-public class MainActivity extends AppCompatActivity implements SensorEventListener{
+public class MainActivity extends AppCompatActivity implements SensorEventListener {
 
     //View変数
     private TextView timerText, countdownText;
@@ -37,15 +36,21 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     //座禅終了判定
     private boolean activityFinish = false;
 
+    //ポーズ判定
     private boolean activityPose = true;
+
     //データフォーマット
     private SimpleDateFormat dataFormat =
             new SimpleDateFormat("mm:ss.SS", Locale.JAPAN);
 
-
-    private long[] countNumberList = {180000, 300000, 600000, 1800000, 3600000, 0};
-    private long countNumber = countNumberList[ConfigActivity.config_value.getInt("SeekValue", 0)];
+    //タイマー変数
     private CountDown countDown;
+    private CountUp countUp;
+    private Timer countTimer;
+    private final Handler timerHandler = new Handler(Looper.getMainLooper());
+    private long[] countNumberList = {180000, 300000, 600000, 1200000, 1800000, 0};
+    private long countNumber = countNumberList[ConfigActivity.config_value.getInt("SeekValue", 0)];
+    private Boolean countUpDownFlag = countNumber != 0;
 
     //センサー変数
     static SensorManager manager;
@@ -90,7 +95,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     // Z軸加速方向
     boolean vecz = true;
 
-
     //ノイズ対策
     boolean noiseflg = true;
     //ベクトル量(最大値)
@@ -128,29 +132,46 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         } else if (activityStart && !activityFinish) {
             poseScreen.setVisibility(View.VISIBLE);
             tapScreen.setEnabled(false);
-            countDown.cancel();
+            if (countUpDownFlag) {
+                countDown.cancel();
+            } else {
+                countTimer.cancel();
+            }
+
             activityStart = false;
             activityPose = true;
         }
     }
 
+
     //タップから3秒後にスタート
     public void countDown() {
-        countDown = new CountDown(countNumber, 10);
+
+        if (countUpDownFlag) {
+            countDown = new CountDown(countNumber, 10);
+        } else {
+            countUp = new CountUp();
+        }
+
         startScreen.setVisibility(View.GONE);
         tapScreen.setEnabled(false);
         activityPose = false;
-        final Handler countdownHandler = new Handler();
-        countdownHandler.postDelayed(() -> countdownText.setText("3"), 1000);
-        countdownHandler.postDelayed(() -> countdownText.setText("2"), 2000);
-        countdownHandler.postDelayed(() -> countdownText.setText("1"), 3000);
-        countdownHandler.postDelayed(() -> {
+        final Handler countDownHandler = new Handler();
+        countDownHandler.postDelayed(() -> countdownText.setText("3"), 1000);
+        countDownHandler.postDelayed(() -> countdownText.setText("2"), 2000);
+        countDownHandler.postDelayed(() -> countdownText.setText("1"), 3000);
+        countDownHandler.postDelayed(() -> {
             timerText.setEnabled(true);
             countdownText.setText("Start!!");
         }, 4000);
-        countdownHandler.postDelayed(() -> {
+        countDownHandler.postDelayed(() -> {
             countdownText.setText("");
-            countDown.start();
+            if (countUpDownFlag) {
+                countDown.start();
+            } else {
+                countTimer = new Timer();
+                countTimer.schedule(countUp, 0, 1);
+            }
             tapScreen.setEnabled(true);
             activityStart = true;
         }, 5000);
@@ -158,7 +179,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
     //ポーズ画面
     public void pose(View v) {
-
         switch (getResources().getResourceEntryName(v.getId())) {
             case "resume":
                 //再開
@@ -186,16 +206,30 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
             case "finish":
                 //座禅中断
-                new AlertDialog.Builder(this)
-                        .setCancelable(false)
-                        .setMessage("座禅を中断しますか？")
-                        .setPositiveButton("はい", (dialog, which) -> {
-                            Intent intent = new Intent(getApplicationContext(), StartActivity.class);
-                            startActivity(intent);
-                            this.finish();
-                        })
-                        .setNegativeButton("いいえ", null)
-                        .show();
+                if (countUpDownFlag || countNumber < 60000) {
+                    new AlertDialog.Builder(this)
+                            .setCancelable(false)
+                            .setMessage("座禅を中断しますか？\n※記録は残りません")
+                            .setPositiveButton("はい", (dialog, which) -> {
+                                Intent intent = new Intent(getApplicationContext(), StartActivity.class);
+                                startActivity(intent);
+                                this.finish();
+                            })
+                            .setNegativeButton("いいえ", null)
+                            .show();
+
+                } else {
+                    new AlertDialog.Builder(this)
+                            .setCancelable(false)
+                            .setMessage("座禅を終了しますか？")
+                            .setPositiveButton("はい", (dialog, which) -> {
+                                Intent intent = new Intent(getApplicationContext(), ResultActivity.class);
+                                startActivity(intent);
+                                this.finish();
+                            })
+                            .setNegativeButton("いいえ", null)
+                            .show();
+                }
                 break;
 
             default:
@@ -435,6 +469,25 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         }
     }
 
+    //カウントアップタイマー
+    class CountUp extends TimerTask {
+        @Override
+        public void run() {
+            // handlerを使って処理をキューイングする
+            timerHandler.post(new Runnable() {
+                public void run() {
+                    countNumber++;
+//                    long mm = count*100 / 1000 / 60;
+//                    long ss = count*100 / 1000 % 60;
+//                    long ms = (count*100 - ss * 1000 - mm * 1000 * 60)/100;
+                    // 桁数を合わせるために02d(2桁)を設定
+//                    timerText.setText(
+//                            String.format(Locale.US, "%1$02d:%2$02d.%3$01d", mm, ss, ms));
+                    timerText.setText(dataFormat.format(countNumber));
+                }
+            });
+        }
+    }
 }
 
 
