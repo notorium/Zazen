@@ -53,7 +53,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private Boolean countUpDownFlag = countNumber != 0;
 
     //センサー変数
-    static SensorManager manager;
+    private SensorManager sensorManager;
     private int x = 0, y = 0, z = 0;
     private StringBuilder data;
 
@@ -121,7 +121,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         timerText.setText(dataFormat.format(countNumber));
         countdownText.setText("");
 
-        manager = (SensorManager) getSystemService(SENSOR_SERVICE);
+        sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
     }
 
     //画面タップ後に座禅スタート
@@ -132,6 +132,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         } else if (activityStart && !activityFinish) {
             poseScreen.setVisibility(View.VISIBLE);
             tapScreen.setEnabled(false);
+
             if (countUpDownFlag) {
                 countDown.cancel();
             } else {
@@ -146,7 +147,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
     //タップから3秒後にスタート
     public void countDown() {
-
         if (countUpDownFlag) {
             countDown = new CountDown(countNumber, 10);
         } else {
@@ -156,6 +156,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         startScreen.setVisibility(View.GONE);
         tapScreen.setEnabled(false);
         activityPose = false;
+
         final Handler countDownHandler = new Handler();
         countDownHandler.postDelayed(() -> countdownText.setText("3"), 1000);
         countDownHandler.postDelayed(() -> countdownText.setText("2"), 2000);
@@ -164,14 +165,17 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             timerText.setEnabled(true);
             countdownText.setText("Start!!");
         }, 4000);
+
         countDownHandler.postDelayed(() -> {
             countdownText.setText("");
+
             if (countUpDownFlag) {
                 countDown.start();
             } else {
                 countTimer = new Timer();
                 countTimer.schedule(countUp, 0, 1);
             }
+
             tapScreen.setEnabled(true);
             activityStart = true;
         }, 5000);
@@ -277,7 +281,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     public void onStop() {
         super.onStop();
         // Listenerの登録解除
-        manager.unregisterListener(this);
+        sensorManager.unregisterListener(this);
     }
 
     //ジャイロ開始
@@ -285,13 +289,13 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     public void onResume() {
         super.onResume();
         // Listenerの登録
-        List<android.hardware.Sensor> sensors = manager.getSensorList(android.hardware.Sensor.TYPE_ROTATION_VECTOR);
-        List<android.hardware.Sensor> sensors2 = manager.getSensorList(android.hardware.Sensor.TYPE_ACCELEROMETER);
+        List<android.hardware.Sensor> sensors = sensorManager.getSensorList(android.hardware.Sensor.TYPE_ROTATION_VECTOR);
+        List<android.hardware.Sensor> sensors2 = sensorManager.getSensorList(android.hardware.Sensor.TYPE_ACCELEROMETER);
         if (sensors.size() > 0) {
             android.hardware.Sensor s = sensors.get(0);
             android.hardware.Sensor s2 = sensors2.get(0);
-            manager.registerListener(this, s, SensorManager.SENSOR_DELAY_NORMAL);
-            manager.registerListener(this, s2, SensorManager.SENSOR_DELAY_NORMAL);
+            sensorManager.registerListener(this, s, SensorManager.SENSOR_DELAY_NORMAL);
+            sensorManager.registerListener(this, s2, SensorManager.SENSOR_DELAY_NORMAL);
         }
     }
 
@@ -474,17 +478,15 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         @Override
         public void run() {
             // handlerを使って処理をキューイングする
-            timerHandler.post(new Runnable() {
-                public void run() {
-                    countNumber++;
+            timerHandler.post(() -> {
+                countNumber++;
 //                    long mm = count*100 / 1000 / 60;
 //                    long ss = count*100 / 1000 % 60;
 //                    long ms = (count*100 - ss * 1000 - mm * 1000 * 60)/100;
-                    // 桁数を合わせるために02d(2桁)を設定
+                // 桁数を合わせるために02d(2桁)を設定
 //                    timerText.setText(
 //                            String.format(Locale.US, "%1$02d:%2$02d.%3$01d", mm, ss, ms));
-                    timerText.setText(dataFormat.format(countNumber));
-                }
+                timerText.setText(dataFormat.format(countNumber));
             });
         }
     }
