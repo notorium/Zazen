@@ -1,6 +1,5 @@
-package com.example.zazen;
+package com.example.zazen.activity;
 
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -12,6 +11,8 @@ import android.widget.Switch;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.example.zazen.R;
 
 public class ConfigActivity extends AppCompatActivity {
     private SeekBar setTime;

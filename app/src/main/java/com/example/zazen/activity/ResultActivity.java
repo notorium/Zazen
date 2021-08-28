@@ -1,8 +1,10 @@
-package com.example.zazen;
+package com.example.zazen.activity;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
+
+import com.example.zazen.R;
 
 public class ResultActivity extends AppCompatActivity {
 

@@ -1,4 +1,4 @@
-package com.example.zazen;
+package com.example.zazen.activity;
 
 import android.content.Intent;
 import android.hardware.SensorEvent;
@@ -15,6 +15,8 @@ import android.widget.TextView;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+
+import com.example.zazen.R;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
