@@ -22,7 +22,10 @@ public class HttpRequest_POST extends AsyncTask<String, Void, JSONObject> {
         callerActivity = activity;
         postData = string;
     }
-
+    public HttpRequest_POST(Activity activity, String string,String string2) {
+        callerActivity = activity;
+        postData = string;
+    }
     @Override
     protected JSONObject doInBackground(String... params) {
         HttpURLConnection con = null;

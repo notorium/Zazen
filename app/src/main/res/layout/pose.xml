@@ -21,7 +21,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:onClick="pose"
-            android:text="再開" />
+            android:text="戻る" />
 
         <Button
             android:id="@+id/restart"

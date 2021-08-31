@@ -45,6 +45,10 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private SimpleDateFormat dataFormat =
             new SimpleDateFormat("mm:ss.SS", Locale.JAPAN);
 
+    //記録データ
+    StringBuilder timeData;
+    StringBuilder measurementData;
+
     //タイマー変数
     private CountDown countDown;
     private CountUp countUp;
@@ -119,11 +123,14 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         poseScreen = findViewById(R.id.poseScreen);
         tapScreen = findViewById(R.id.tapScreen);
 
+        timeData = new StringBuilder("");
+        measurementData = new StringBuilder("");
         //countNumber = countNumberList[ConfigActivity.config_value.getInt("SeekValue", 0)];
         timerText.setText(dataFormat.format(countNumber));
         countdownText.setText("");
 
         sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
+        if (!ConfigActivity.config_value.getBoolean("GyroChecked", false)) onStop();
     }
 
     //画面タップ後に座禅スタート
@@ -135,13 +142,13 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             poseScreen.setVisibility(View.VISIBLE);
             tapScreen.setEnabled(false);
 
-            if (countUpDownFlag) {
-                countDown.cancel();
-            } else {
-                countTimer.cancel();
-            }
+//            if (countUpDownFlag) {
+//                countDown.cancel();
+//            } else {
+//                countTimer.cancel();
+//            }
 
-            activityStart = false;
+//            activityStart = false;
             activityPose = true;
         }
     }
@@ -189,7 +196,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             case "resume":
                 //再開
                 poseScreen.setVisibility(View.GONE);
-                countDown();
+                tapScreen.setEnabled(true);
                 break;
 
             case "restart":
@@ -198,6 +205,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                         .setCancelable(false)
                         .setMessage("同じ設定のままやり直しますか？")
                         .setPositiveButton("はい", (dialog, which) -> {
+                            onStop();
                             Intent intent = getIntent();
                             overridePendingTransition(0, 0);
                             intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
@@ -212,13 +220,15 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
             case "finish":
                 //座禅中断
-                if (countUpDownFlag || countNumber < 60000) {
+                if (countUpDownFlag || countNumber < 6000) {
                     new AlertDialog.Builder(this)
                             .setCancelable(false)
                             .setMessage("座禅を中断しますか？\n※記録は残りません")
                             .setPositiveButton("はい", (dialog, which) -> {
                                 Intent intent = new Intent(getApplicationContext(), StartActivity.class);
                                 startActivity(intent);
+                                onStop();
+                                activityFinish = true;
                                 this.finish();
                             })
                             .setNegativeButton("いいえ", null)
@@ -230,7 +240,11 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                             .setMessage("座禅を終了しますか？")
                             .setPositiveButton("はい", (dialog, which) -> {
                                 Intent intent = new Intent(getApplicationContext(), ResultActivity.class);
+                                intent.putExtra("TIME_DATA", timeData.toString());
+                                intent.putExtra("MEASUREMENT_DATA", measurementData.toString());
                                 startActivity(intent);
+                                onStop();
+                                activityFinish = true;
                                 this.finish();
                             })
                             .setNegativeButton("いいえ", null)
@@ -246,20 +260,21 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
     public void result(View v) {
         Intent intent = new Intent(getApplicationContext(), ResultActivity.class);
+        intent.putExtra("TIME_DATA", timeData.toString());
+        intent.putExtra("MEASUREMENT_DATA", measurementData.toString());
         startActivity(intent);
     }
 
     //ホームボタン、タスクボタンタップ検知
     public void onUserLeaveHint() {
         //座禅強制終了
-        View decor = getWindow().getDecorView();
-        decor.setSystemUiVisibility(View.SYSTEM_UI_FLAG_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_LAYOUT_STABLE | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
-        if (!activityFinish && !activityPose) {
+        if (!activityFinish) {
             new AlertDialog.Builder(this)
                     .setCancelable(false)
                     .setMessage("座禅が中断されました")
                     .setPositiveButton("閉じる", (dialog, which) -> {
                         countDown.cancel();
+                        onStop();
                         activityStart = false;
                         this.finish();
                     })
@@ -273,8 +288,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             //画面タップ有効時、ポーズ画面へ遷移
             poseScreen.setVisibility(View.VISIBLE);
             tapScreen.setEnabled(false);
-            countDown.cancel();
-            activityStart = false;
         }
     }
 
@@ -296,8 +309,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         if (sensors.size() > 0) {
             android.hardware.Sensor s = sensors.get(0);
             android.hardware.Sensor s2 = sensors2.get(0);
-            sensorManager.registerListener(this, s, SensorManager.SENSOR_DELAY_NORMAL);
-            sensorManager.registerListener(this, s2, SensorManager.SENSOR_DELAY_NORMAL);
+            sensorManager.registerListener(this, s, SensorManager.SENSOR_DELAY_UI);
+            sensorManager.registerListener(this, s2, SensorManager.SENSOR_DELAY_UI);
         }
     }
 
@@ -356,14 +369,19 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             if (noiseflg) {
                 noiseflg = false;
             } else {
-                int fvector = (int) Math.abs(vectorSize * 1000);
-                int fdx = (int) Math.abs(dx * 1000);
-                int fdy = (int) Math.abs(dy * 1000);
-                int fdz = (int) Math.abs(dz * 1000);
+                float fvector = (float) vectorSize;
+                int fdx = (int) dx;
+                int fdy = (int) dy;
+                int fdz = (int) dz;
 
                 SimpleDateFormat DF = new SimpleDateFormat("HH:mm:ss.SSS", Locale.JAPAN);
                 String date = DF.format(new Date());
-                System.out.println(date + "," + fdx + "," + fdy + "," + fdz + "," + fvector);
+                if (activityStart && !activityFinish) {
+                    System.out.println(date + "," + fdx + "," + fdy + "," + fdz + "," + fvector);
+                    timeData.append(date + "\n");
+                    measurementData.append(vectorSize + "\n");
+                }
+
                 //datalist.add(date + "," + fdx + "," + fdy + "," + fdz + "," + fvector + "\n");
                 //datalist.add(date + "," + dx + "," + dy + "," + dz + "," + vectorSize + "\n");
                 if (true/*fvector > 100 && dz <0.0f */) {
@@ -457,6 +475,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             activityFinish = true;
             startScreen.setVisibility(View.GONE);
             tapScreen.setVisibility(View.GONE);
+            poseScreen.setVisibility(View.GONE);
             timerText.setText(dataFormat.format(0));
             countdownText.setText("終了!!");
             resultButton.setVisibility(View.VISIBLE);
