@@ -37,7 +37,7 @@ public class ResultActivity extends AppCompatActivity {
     }
 
     public void postResult(View v) {
-        SimpleDateFormat DF = new SimpleDateFormat("HH:mm:ss", Locale.JAPAN);
+        SimpleDateFormat DF = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss", Locale.JAPAN);
         String date = DF.format(new Date());
         String postStr = "{\"user_id\":\"" + "test" +
                 "\",\"date\":\"" + date +
