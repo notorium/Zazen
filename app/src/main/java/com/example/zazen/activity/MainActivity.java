@@ -46,8 +46,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             new SimpleDateFormat("mm:ss.SS", Locale.JAPAN);
 
     //記録データ
-    StringBuilder timeData;
-    StringBuilder measurementData;
+    private StringBuilder timeData;
+    private StringBuilder measurementData;
 
     //タイマー変数
     private CountDown countDown;
@@ -130,13 +130,16 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         countdownText.setText("");
 
         sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
-        if (!ConfigActivity.config_value.getBoolean("GyroChecked", false)) onStop();
+
+
     }
 
     //画面タップ後に座禅スタート
     public void screenTap(View v) {
+
         if (!activityStart && !activityFinish) {
             //3秒のカウントダウン
+            if (!ConfigActivity.config_value.getBoolean("GyroChecked", false)) onStop();
             countDown();
         } else if (activityStart && !activityFinish) {
             poseScreen.setVisibility(View.VISIBLE);
@@ -257,7 +260,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         }
     }
 
-
+    //結果画面へ遷移
     public void result(View v) {
         Intent intent = new Intent(getApplicationContext(), ResultActivity.class);
         intent.putExtra("TIME_DATA", timeData.toString());
@@ -378,8 +381,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 String date = DF.format(new Date());
                 if (activityStart && !activityFinish) {
                     System.out.println(date + "," + fdx + "," + fdy + "," + fdz + "," + fvector);
-                    timeData.append(date + "\n");
-                    measurementData.append(vectorSize + "\n");
+                    timeData.append(date + "\\n");
+                    measurementData.append(vectorSize + "\\n");
                 }
 
                 //datalist.add(date + "," + fdx + "," + fdy + "," + fdz + "," + fvector + "\n");

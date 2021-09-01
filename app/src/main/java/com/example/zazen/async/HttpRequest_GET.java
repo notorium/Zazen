@@ -70,7 +70,9 @@ public class HttpRequest_GET extends AsyncTask<String, Void, JSONObject> {
 //                builder.append(obj.getString("phone") + "\n");
 //                builder.append(obj.getString("mail") + "\n");
 //            }
+            System.out.println(json);
         } catch (JSONException e) {
+            System.out.println(e);
             e.printStackTrace();
         }
     }
