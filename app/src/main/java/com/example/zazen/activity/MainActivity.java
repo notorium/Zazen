@@ -47,7 +47,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
     //記録データ
     private StringBuilder timeData;
-    private StringBuilder measurementData;
+    private StringBuilder accelerationData;
+    private StringBuilder rotationDataX, rotationDataY, rotationDataZ;
 
     //タイマー変数
     private CountDown countDown;
@@ -60,7 +61,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
     //センサー変数
     private SensorManager sensorManager;
-    private int x = 0, y = 0, z = 0;
+    private float x = 0, y = 0, z = 0;
     private StringBuilder data;
 
     //THRESHOLD ある値以上を検出するための閾値
@@ -124,7 +125,10 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         tapScreen = findViewById(R.id.tapScreen);
 
         timeData = new StringBuilder("");
-        measurementData = new StringBuilder("");
+        accelerationData = new StringBuilder("");
+        rotationDataX = new StringBuilder("");
+        rotationDataY = new StringBuilder("");
+        rotationDataZ = new StringBuilder("");
         //countNumber = countNumberList[ConfigActivity.config_value.getInt("SeekValue", 0)];
         timerText.setText(dataFormat.format(countNumber));
         countdownText.setText("");
@@ -244,7 +248,10 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                             .setPositiveButton("はい", (dialog, which) -> {
                                 Intent intent = new Intent(getApplicationContext(), ResultActivity.class);
                                 intent.putExtra("TIME_DATA", timeData.toString());
-                                intent.putExtra("MEASUREMENT_DATA", measurementData.toString());
+                                intent.putExtra("ACCELERATION_DATA", accelerationData.toString());
+                                intent.putExtra("ROTATIONDATA_X", rotationDataX.toString());
+                                intent.putExtra("ROTATIONDATA_Y", rotationDataY.toString());
+                                intent.putExtra("ROTATIONDATA_Z", rotationDataZ.toString());
                                 startActivity(intent);
                                 onStop();
                                 activityFinish = true;
@@ -264,7 +271,10 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     public void result(View v) {
         Intent intent = new Intent(getApplicationContext(), ResultActivity.class);
         intent.putExtra("TIME_DATA", timeData.toString());
-        intent.putExtra("MEASUREMENT_DATA", measurementData.toString());
+        intent.putExtra("ACCELERATION_DATA", accelerationData.toString());
+        intent.putExtra("ROTATIONDATA_X", rotationDataX.toString());
+        intent.putExtra("ROTATIONDATA_Y", rotationDataY.toString());
+        intent.putExtra("ROTATIONDATA_Z", rotationDataZ.toString());
         startActivity(intent);
     }
 
@@ -382,7 +392,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 if (activityStart && !activityFinish) {
                     System.out.println(date + "," + fdx + "," + fdy + "," + fdz + "," + fvector);
                     timeData.append(date + "\\n");
-                    measurementData.append(vectorSize + "\\n");
+                    accelerationData.append(vectorSize + "\\n");
                 }
 
                 //datalist.add(date + "," + fdx + "," + fdy + "," + fdz + "," + fvector + "\n");
@@ -414,16 +424,21 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 System.out.println("z:" + Math.abs(Math.floor(gyro[2] * 10000)));*/
         } else if (event.sensor.getType() == android.hardware.Sensor.TYPE_ROTATION_VECTOR) {
             vector = event.values.clone();
-            int vx = (int) Math.abs(Math.floor(vector[0] / 7 * 500));
-            int vy = (int) Math.abs(Math.floor(vector[1] / 7 * 500));
-            int vz = (int) Math.abs(Math.floor(vector[2] * 100));
+            float vx = vector[0];
+            float vy = vector[1];
+            float vz = vector[2];
+            if (activityStart && !activityFinish) {
+                rotationDataX.append(vx + "\\n");
+                rotationDataY.append(vy + "\\n");
+                rotationDataZ.append(vz + "\\n");
+            }
             x = vx;
             y = vy;
             z = vz;
-            String str = "ジャイロセンサー値:"
-                    + "\nX軸中心:" + String.format("%f", vector[0] * 180 * Math.PI)
-                    + "\nY軸中心:" + String.format("%f", vector[1] * 180 * Math.PI)
-                    + "\nZ軸中心:" + String.format("%f", vector[2] * 180 * Math.PI);
+//            String str = "ジャイロセンサー値:"
+//                    + "\nX軸中心:" + String.format("%f", vector[0] * 180 * Math.PI)
+//                    + "\nY軸中心:" + String.format("%f", vector[1] * 180 * Math.PI)
+//                    + "\nZ軸中心:" + String.format("%f", vector[2] * 180 * Math.PI);
         }
 
 

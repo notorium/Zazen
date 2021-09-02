@@ -17,7 +17,7 @@ import java.util.Locale;
 
 public class ResultActivity extends AppCompatActivity {
 
-    String timeData, measurementData;
+    String timeData, accelerationData, rotationDataX, rotationDataY, rotationDataZ;
     boolean gyroFlg = ConfigActivity.config_value.getBoolean("GyroChecked", false);
 
     EditText commentText;
@@ -31,7 +31,11 @@ public class ResultActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
         timeData = gyroFlg ? intent.getStringExtra("TIME_DATA") : "";
-        measurementData = gyroFlg ? intent.getStringExtra("MEASUREMENT_DATA") : "";
+        accelerationData = gyroFlg ? intent.getStringExtra("ACCELERATION_DATA") : "";
+        rotationDataX = gyroFlg ? intent.getStringExtra("ROTATIONDATA_X") : "";
+        rotationDataY = gyroFlg ? intent.getStringExtra("ROTATIONDATA_Y") : "";
+        rotationDataZ = gyroFlg ? intent.getStringExtra("ROTATIONDATA_Z") : "";
+
         TextView view = findViewById(R.id.textView7);
         view.setText(timeData);
     }
@@ -45,7 +49,10 @@ public class ResultActivity extends AppCompatActivity {
                 "\",\"comment\":\"" + commentText.getText().toString() +
                 "\",\"flg\":\"" + (gyroFlg ? "1" : "0") +
                 "\",\"timedata\":\"" + timeData +
-                "\",\"measurementdata\":\"" + measurementData +
+                "\",\"accelerationdata\":\"" + accelerationData +
+                "\",\"rotationdata_x\":\"" + rotationDataX +
+                "\",\"rotationdata_y\":\"" + rotationDataY +
+                "\",\"rotationdata_z\":\"" + rotationDataZ +
                 "\"}";
         HttpRequest_POST httpRequestPost = new HttpRequest_POST(this, postStr);
         httpRequestPost.execute("http://fukuiohr2.sakura.ne.jp/2021/Zazen/postdata.php");
