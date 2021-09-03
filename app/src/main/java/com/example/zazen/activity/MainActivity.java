@@ -48,7 +48,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     //記録データ
     private StringBuilder timeData;
     private StringBuilder accelerationData;
-    private StringBuilder rotationDataX, rotationDataY, rotationDataZ;
+    private StringBuilder rotationData;
 
     //タイマー変数
     private CountDown countDown;
@@ -126,9 +126,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
         timeData = new StringBuilder("");
         accelerationData = new StringBuilder("");
-        rotationDataX = new StringBuilder("");
-        rotationDataY = new StringBuilder("");
-        rotationDataZ = new StringBuilder("");
+        rotationData = new StringBuilder("");
+
         //countNumber = countNumberList[ConfigActivity.config_value.getInt("SeekValue", 0)];
         timerText.setText(dataFormat.format(countNumber));
         countdownText.setText("");
@@ -249,9 +248,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                                 Intent intent = new Intent(getApplicationContext(), ResultActivity.class);
                                 intent.putExtra("TIME_DATA", timeData.toString());
                                 intent.putExtra("ACCELERATION_DATA", accelerationData.toString());
-                                intent.putExtra("ROTATIONDATA_X", rotationDataX.toString());
-                                intent.putExtra("ROTATIONDATA_Y", rotationDataY.toString());
-                                intent.putExtra("ROTATIONDATA_Z", rotationDataZ.toString());
+                                intent.putExtra("ROTATIONDATA", rotationData.toString());
                                 startActivity(intent);
                                 onStop();
                                 activityFinish = true;
@@ -272,9 +269,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         Intent intent = new Intent(getApplicationContext(), ResultActivity.class);
         intent.putExtra("TIME_DATA", timeData.toString());
         intent.putExtra("ACCELERATION_DATA", accelerationData.toString());
-        intent.putExtra("ROTATIONDATA_X", rotationDataX.toString());
-        intent.putExtra("ROTATIONDATA_Y", rotationDataY.toString());
-        intent.putExtra("ROTATIONDATA_Z", rotationDataZ.toString());
+        intent.putExtra("ROTATIONDATA", rotationData.toString());
+
         startActivity(intent);
     }
 
@@ -428,9 +424,9 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             float vy = vector[1];
             float vz = vector[2];
             if (activityStart && !activityFinish) {
-                rotationDataX.append(vx + "\\n");
-                rotationDataY.append(vy + "\\n");
-                rotationDataZ.append(vz + "\\n");
+                SimpleDateFormat DF = new SimpleDateFormat("HH:mm:ss.SSS", Locale.JAPAN);
+                String date = DF.format(new Date());
+                rotationData.append(date + "," + vx + "," + vy + "," + vz + "\\n");
             }
             x = vx;
             y = vy;

@@ -17,7 +17,7 @@ import java.util.Locale;
 
 public class ResultActivity extends AppCompatActivity {
 
-    String timeData, accelerationData, rotationDataX, rotationDataY, rotationDataZ;
+    String timeData, accelerationData, rotationData;
     boolean gyroFlg = ConfigActivity.config_value.getBoolean("GyroChecked", false);
 
     EditText commentText;
@@ -32,9 +32,8 @@ public class ResultActivity extends AppCompatActivity {
         Intent intent = getIntent();
         timeData = gyroFlg ? intent.getStringExtra("TIME_DATA") : "";
         accelerationData = gyroFlg ? intent.getStringExtra("ACCELERATION_DATA") : "";
-        rotationDataX = gyroFlg ? intent.getStringExtra("ROTATIONDATA_X") : "";
-        rotationDataY = gyroFlg ? intent.getStringExtra("ROTATIONDATA_Y") : "";
-        rotationDataZ = gyroFlg ? intent.getStringExtra("ROTATIONDATA_Z") : "";
+        rotationData = gyroFlg ? intent.getStringExtra("ROTATIONDATA") : "";
+
 
         TextView view = findViewById(R.id.textView7);
         view.setText(timeData);
@@ -50,9 +49,7 @@ public class ResultActivity extends AppCompatActivity {
                 "\",\"flg\":\"" + (gyroFlg ? "1" : "0") +
                 "\",\"timedata\":\"" + timeData +
                 "\",\"accelerationdata\":\"" + accelerationData +
-                "\",\"rotationdata_x\":\"" + rotationDataX +
-                "\",\"rotationdata_y\":\"" + rotationDataY +
-                "\",\"rotationdata_z\":\"" + rotationDataZ +
+                "\",\"rotationdata\":\"" + rotationData +
                 "\"}";
         HttpRequest_POST httpRequestPost = new HttpRequest_POST(this, postStr);
         httpRequestPost.execute("http://fukuiohr2.sakura.ne.jp/2021/Zazen/postdata.php");
