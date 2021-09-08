@@ -55,9 +55,9 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private CountUp countUp;
     private Timer countTimer;
     private final Handler timerHandler = new Handler(Looper.getMainLooper());
-    private long[] countNumberList = {180000, 300000, 600000, 1200000, 1800000, 0};
+    private long[] countNumberList = {180000, 300000, 600000, 1200000, 1800000, 3600000};
     private long countNumber = countNumberList[ConfigActivity.config_value.getInt("SeekValue", 0)];
-    private Boolean countUpDownFlag = countNumber != 0;
+    private Boolean countUpDownFlag = ConfigActivity.config_value.getInt("SeekValue", 0) != 5;
 
     //センサー変数
     private SensorManager sensorManager;
@@ -165,7 +165,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         if (countUpDownFlag) {
             countDown = new CountDown(countNumber, 10);
         } else {
-            countUp = new CountUp();
+            countUp = new CountUp(countNumber, 10, countNumberList[5]);
         }
 
         startScreen.setVisibility(View.GONE);
@@ -187,8 +187,9 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             if (countUpDownFlag) {
                 countDown.start();
             } else {
-                countTimer = new Timer();
-                countTimer.schedule(countUp, 0, 1);
+//                countTimer = new Timer();
+//                countTimer.schedule(countUp, 0, 1);
+                countUp.start();
             }
 
             tapScreen.setEnabled(true);
@@ -458,30 +459,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             super(millisInFuture, countDownInterval);
         }
 
-//        public void run() {
-//            // 10 msec order
-//            int period = 10;
-//
-//            /*while (!stopRun) {
-//                // sleep: period msec
-//                try {
-//                    Thread.sleep(period);
-//                }
-//                catch (InterruptedException e) {
-//                    e.printStackTrace();
-//                    stopRun = true;
-//                }*/
-//            final Handler handler = new Handler();
-//            handler.post((Runnable) () -> {
-//                long endTime = System.currentTimeMillis();
-//                // カウント時間 = 経過時間 - 開始時間
-//                long diffTime = (endTime - startTime);
-//                timerText.setText(dataFormat.format(diffTime));
-//
-//            });
-//            //}
-//        }
-
         @Override
         public void onFinish() {
             //タイマー終了
@@ -499,30 +476,38 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         @Override
         public void onTick(long millisUntilFinished) {
             // 残り時間を分、秒、ミリ秒に分割
-            //long mm = millisUntilFinished / 1000 / 60;
-            //long ss = millisUntilFinished / 1000 % 60;
-            //long ms = millisUntilFinished - ss * 1000 - mm * 1000 * 60;
-            //timerText.setText(String.format("%1$02d:%2$02d.%3$03d", mm, ss, ms));
             countNumber = millisUntilFinished;
             timerText.setText(dataFormat.format(millisUntilFinished));
         }
     }
 
     //カウントアップタイマー
-    class CountUp extends TimerTask {
+    class CountUp extends CountDownTimer {
+        private final long firstTime;
+
+        public CountUp(long millisInFuture, long countDownInterval, long firstTime) {
+            super(millisInFuture, countDownInterval);
+            this.firstTime = firstTime;
+        }
+
         @Override
-        public void run() {
-            // handlerを使って処理をキューイングする
-            timerHandler.post(() -> {
-                countNumber++;
-//                    long mm = count*100 / 1000 / 60;
-//                    long ss = count*100 / 1000 % 60;
-//                    long ms = (count*100 - ss * 1000 - mm * 1000 * 60)/100;
-                // 桁数を合わせるために02d(2桁)を設定
-//                    timerText.setText(
-//                            String.format(Locale.US, "%1$02d:%2$02d.%3$01d", mm, ss, ms));
-                timerText.setText(dataFormat.format(countNumber));
-            });
+        public void onFinish() {
+            //タイマー終了
+            activityStart = false;
+            activityFinish = true;
+            startScreen.setVisibility(View.GONE);
+            tapScreen.setVisibility(View.GONE);
+            poseScreen.setVisibility(View.GONE);
+            timerText.setText(dataFormat.format(0));
+            countdownText.setText("終了!!");
+            resultButton.setVisibility(View.VISIBLE);
+        }
+
+        // インターバルで呼ばれる
+        @Override
+        public void onTick(long millisUntilFinished) {
+            countNumber = firstTime - millisUntilFinished;
+            timerText.setText(dataFormat.format(countNumber));
         }
     }
 }

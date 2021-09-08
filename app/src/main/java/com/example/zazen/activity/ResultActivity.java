@@ -53,6 +53,12 @@ public class ResultActivity extends AppCompatActivity {
                 "\"}";
         HttpRequest_POST httpRequestPost = new HttpRequest_POST(this, postStr);
         httpRequestPost.execute("http://fukuiohr2.sakura.ne.jp/2021/Zazen/postdata.php");
-//        httpreq2.execute("http://fukuiohr2.sakura.ne.jp/2021/Zazen/test.php");
+    }
+
+    public void shareResult(View v) {
+        Intent shareIntent = new Intent(Intent.ACTION_SEND);
+        shareIntent.setType("text/plain");
+        shareIntent.putExtra(Intent.EXTRA_TEXT, "");
+        startActivity(shareIntent);
     }
 }
