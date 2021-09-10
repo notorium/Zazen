@@ -53,8 +53,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     //タイマー変数
     private CountDown countDown;
     private CountUp countUp;
-    private Timer countTimer;
-    private final Handler timerHandler = new Handler(Looper.getMainLooper());
     private long[] countNumberList = {180000, 300000, 600000, 1200000, 1800000, 3600000};
     private long countNumber = countNumberList[ConfigActivity.config_value.getInt("SeekValue", 0)];
     private Boolean countUpDownFlag = ConfigActivity.config_value.getInt("SeekValue", 0) != 5;
@@ -249,7 +247,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                                 Intent intent = new Intent(getApplicationContext(), ResultActivity.class);
                                 intent.putExtra("TIME_DATA", timeData.toString());
                                 intent.putExtra("ACCELERATION_DATA", accelerationData.toString());
-                                intent.putExtra("ROTATIONDATA", rotationData.toString());
+                                intent.putExtra("ROTATION_DATA", rotationData.toString());
                                 startActivity(intent);
                                 onStop();
                                 activityFinish = true;
@@ -270,7 +268,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         Intent intent = new Intent(getApplicationContext(), ResultActivity.class);
         intent.putExtra("TIME_DATA", timeData.toString());
         intent.putExtra("ACCELERATION_DATA", accelerationData.toString());
-        intent.putExtra("ROTATIONDATA", rotationData.toString());
+        intent.putExtra("ROTATION_DATA", rotationData.toString());
 
         startActivity(intent);
     }

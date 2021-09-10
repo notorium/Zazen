@@ -32,7 +32,7 @@ public class ResultActivity extends AppCompatActivity {
         Intent intent = getIntent();
         timeData = gyroFlg ? intent.getStringExtra("TIME_DATA") : "";
         accelerationData = gyroFlg ? intent.getStringExtra("ACCELERATION_DATA") : "";
-        rotationData = gyroFlg ? intent.getStringExtra("ROTATIONDATA") : "";
+        rotationData = gyroFlg ? intent.getStringExtra("ROTATION_DATA") : "";
 
 
         TextView view = findViewById(R.id.textView7);
@@ -40,16 +40,19 @@ public class ResultActivity extends AppCompatActivity {
     }
 
     public void postResult(View v) {
+        v.setEnabled(false);
         SimpleDateFormat DF = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss", Locale.JAPAN);
         String date = DF.format(new Date());
         String postStr = "{\"user_id\":\"" + "test" +
                 "\",\"date\":\"" + date +
                 "\",\"time\":\"" + "" +
                 "\",\"comment\":\"" + commentText.getText().toString() +
+                "\",\"selfassessment\":\"" + "0" +
                 "\",\"flg\":\"" + (gyroFlg ? "1" : "0") +
                 "\",\"timedata\":\"" + timeData +
                 "\",\"accelerationdata\":\"" + accelerationData +
                 "\",\"rotationdata\":\"" + rotationData +
+                "\",\"weather_id\":\"" + "0" +
                 "\"}";
         HttpRequest_POST httpRequestPost = new HttpRequest_POST(this, postStr);
         httpRequestPost.execute("http://fukuiohr2.sakura.ne.jp/2021/Zazen/postdata.php");

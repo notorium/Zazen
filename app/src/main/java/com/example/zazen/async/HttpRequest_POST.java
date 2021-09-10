@@ -1,6 +1,7 @@
 package com.example.zazen.async;
 
 import android.app.Activity;
+import android.graphics.Bitmap;
 import android.os.AsyncTask;
 
 import org.json.JSONException;
