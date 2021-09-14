@@ -7,7 +7,6 @@ import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Handler;
-import android.os.Looper;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -22,8 +21,6 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
-import java.util.Timer;
-import java.util.TimerTask;
 
 public class MainActivity extends AppCompatActivity implements SensorEventListener {
 
@@ -46,7 +43,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             new SimpleDateFormat("mm:ss.SS", Locale.JAPAN);
 
     //記録データ
-    private StringBuilder timeData;
     private StringBuilder accelerationData;
     private StringBuilder rotationData;
 
@@ -122,7 +118,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         poseScreen = findViewById(R.id.poseScreen);
         tapScreen = findViewById(R.id.tapScreen);
 
-        timeData = new StringBuilder("");
         accelerationData = new StringBuilder("");
         rotationData = new StringBuilder("");
 
@@ -245,7 +240,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                             .setMessage("座禅を終了しますか？")
                             .setPositiveButton("はい", (dialog, which) -> {
                                 Intent intent = new Intent(getApplicationContext(), ResultActivity.class);
-                                intent.putExtra("TIME_DATA", timeData.toString());
                                 intent.putExtra("ACCELERATION_DATA", accelerationData.toString());
                                 intent.putExtra("ROTATION_DATA", rotationData.toString());
                                 startActivity(intent);
@@ -266,7 +260,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     //結果画面へ遷移
     public void result(View v) {
         Intent intent = new Intent(getApplicationContext(), ResultActivity.class);
-        intent.putExtra("TIME_DATA", timeData.toString());
         intent.putExtra("ACCELERATION_DATA", accelerationData.toString());
         intent.putExtra("ROTATION_DATA", rotationData.toString());
 
@@ -378,16 +371,14 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 noiseflg = false;
             } else {
                 float fvector = (float) vectorSize;
-                int fdx = (int) dx;
-                int fdy = (int) dy;
-                int fdz = (int) dz;
+//                int fdx = (int) dx;
+//                int fdy = (int) dy;
+//                int fdz = (int) dz;
 
                 SimpleDateFormat DF = new SimpleDateFormat("HH:mm:ss.SSS", Locale.JAPAN);
                 String date = DF.format(new Date());
                 if (activityStart && !activityFinish) {
-                    System.out.println(date + "," + fdx + "," + fdy + "," + fdz + "," + fvector);
-                    timeData.append(date + "\\n");
-                    accelerationData.append(vectorSize + "\\n");
+                    accelerationData.append(date + "," + dx + "," + dy + "," + dz + "\\n");
                 }
 
                 //datalist.add(date + "," + fdx + "," + fdy + "," + fdz + "," + fvector + "\n");
@@ -422,14 +413,15 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             float vx = vector[0];
             float vy = vector[1];
             float vz = vector[2];
+            System.out.println(vx + "," + vy + "," + vz);
             if (activityStart && !activityFinish) {
                 SimpleDateFormat DF = new SimpleDateFormat("HH:mm:ss.SSS", Locale.JAPAN);
                 String date = DF.format(new Date());
                 rotationData.append(date + "," + vx + "," + vy + "," + vz + "\\n");
             }
-            x = vx;
-            y = vy;
-            z = vz;
+//            x = vx;
+//            y = vy;
+//            z = vz;
 //            String str = "ジャイロセンサー値:"
 //                    + "\nX軸中心:" + String.format("%f", vector[0] * 180 * Math.PI)
 //                    + "\nY軸中心:" + String.format("%f", vector[1] * 180 * Math.PI)

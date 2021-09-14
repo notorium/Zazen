@@ -63,6 +63,6 @@ public class HttpRequest_POST extends AsyncTask<String, Void, JSONObject> {
     }
 
     public void onPostExecute(JSONObject json) {
-
+        System.out.println(json);
     }
 }
