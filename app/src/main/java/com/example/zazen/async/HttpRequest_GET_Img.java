@@ -2,6 +2,7 @@ package com.example.zazen.async;
 
 import android.app.Activity;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 
 import org.json.JSONArray;
@@ -15,46 +16,50 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
-public class HttpRequest_GET extends AsyncTask<String, Void, JSONObject> {
+public class HttpRequest_GET_Img extends AsyncTask<String, Void, Bitmap> {
     private Activity callerActivity;
 
-    public HttpRequest_GET(Activity activity) {
+    public HttpRequest_GET_Img(Activity activity) {
         callerActivity = activity;
     }
 
     @Override
-    protected JSONObject doInBackground(String... params) {
+    protected Bitmap doInBackground(String... params) {
         HttpURLConnection con = null;
-        StringBuilder builder = new StringBuilder();
-        JSONObject json = new JSONObject();
+        Bitmap bitmap = null;
         try {
             URL url = new URL(params[0]);
             con = (HttpURLConnection) url.openConnection();
             con.setRequestMethod("GET");
             con.setDoOutput(true);
+            con.setReadTimeout(10000);
             con.setConnectTimeout(5000);
             con.setRequestProperty("Content-Type", "application/json;charset=utf-8");
             con.connect();
 
-            InputStream stream = con.getInputStream();
-            BufferedReader reader = new BufferedReader(new InputStreamReader(stream, "UTF-8"));
-            String line = "";
-            while ((line = reader.readLine()) != null)
-                builder.append(line);
-            stream.close();
-
-            json = new JSONObject(builder.toString());
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (JSONException e) {
+            switch (con.getResponseCode()) {
+                case HttpURLConnection.HTTP_OK:
+                    try (InputStream is = con.getInputStream()) {
+                        bitmap = BitmapFactory.decodeStream(is);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    break;
+                case HttpURLConnection.HTTP_UNAUTHORIZED:
+                    break;
+                default:
+                    break;
+            }
+        } catch (Exception e) {
             e.printStackTrace();
         } finally {
-            con.disconnect();
+            if (con != null) {
+                con.disconnect();
+            }
         }
-
-        return json;
+        return bitmap;
     }
+
     public void onPostExecute(JSONObject json) {
         StringBuilder builder = new StringBuilder();
         try {

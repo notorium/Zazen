@@ -180,8 +180,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             if (countUpDownFlag) {
                 countDown.start();
             } else {
-//                countTimer = new Timer();
-//                countTimer.schedule(countUp, 0, 1);
                 countUp.start();
             }
 
