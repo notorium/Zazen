@@ -18,9 +18,10 @@ import java.net.URL;
 
 public class HttpRequest_GET_Img extends AsyncTask<String, Void, Bitmap> {
     private Activity callerActivity;
-
-    public HttpRequest_GET_Img(Activity activity) {
+    private Bitmap imgName;
+    public HttpRequest_GET_Img(Activity activity,String imgName) {
         callerActivity = activity;
+        imgName = null;
     }
 
     @Override
