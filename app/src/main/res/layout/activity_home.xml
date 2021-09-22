@@ -17,6 +17,16 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.0">
 
+        <include
+            android:id="@+id/accountMenu"
+            layout="@layout/account"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:layout_marginEnd="20dp"
+            android:layout_marginRight="20dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
             android:id="@+id/appTitle"
@@ -54,6 +64,19 @@
             app:layout_constraintEnd_toEndOf="@+id/startButton"
             app:layout_constraintStart_toStartOf="@+id/startButton"
             app:layout_constraintTop_toBottomOf="@+id/startButton" />
+
+        <TextView
+            android:id="@+id/accountIcon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:text=""
+            android:textColor="#000000"
+            android:textSize="24sp"
+            app:drawableLeftCompat="@drawable/ic_account_circle_black_36dp"
+            app:drawableTint="#000000"
+            app:layout_constraintEnd_toStartOf="@+id/accountMenu"
+            app:layout_constraintTop_toTopOf="parent" />
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>

@@ -43,8 +43,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             new SimpleDateFormat("mm:ss.SS", Locale.JAPAN);
 
     //記録データ
-    private StringBuilder accelerationData;
-    private StringBuilder rotationData;
+    static StringBuilder accelerationData;
+    static StringBuilder rotationData;
 
     //タイマー変数
     private CountDown countDown;
@@ -238,8 +238,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                             .setMessage("座禅を終了しますか？")
                             .setPositiveButton("はい", (dialog, which) -> {
                                 Intent intent = new Intent(getApplicationContext(), ResultActivity.class);
-                                intent.putExtra("ACCELERATION_DATA", accelerationData.toString());
-                                intent.putExtra("ROTATION_DATA", rotationData.toString());
                                 startActivity(intent);
                                 onStop();
                                 activityFinish = true;
@@ -258,10 +256,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     //結果画面へ遷移
     public void result(View v) {
         Intent intent = new Intent(getApplicationContext(), ResultActivity.class);
-        intent.putExtra("ACCELERATION_DATA", accelerationData.toString());
-        intent.putExtra("ROTATION_DATA", rotationData.toString());
-
         startActivity(intent);
+        this.finish();
     }
 
     //ホームボタン、タスクボタンタップ検知

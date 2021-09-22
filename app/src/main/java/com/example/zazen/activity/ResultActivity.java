@@ -34,8 +34,8 @@ public class ResultActivity extends AppCompatActivity {
         commentText = findViewById(R.id.editText);
 
         Intent intent = getIntent();
-        accelerationData = gyroFlg ? intent.getStringExtra("ACCELERATION_DATA") : "";
-        rotationData = gyroFlg ? intent.getStringExtra("ROTATION_DATA") : "";
+        accelerationData = gyroFlg ? MainActivity.accelerationData.toString() : "";
+        rotationData = gyroFlg ? MainActivity.rotationData.toString() : "";
 
         assessment_seekBar.setOnSeekBarChangeListener(
                 new SeekBar.OnSeekBarChangeListener() {
@@ -88,5 +88,8 @@ public class ResultActivity extends AppCompatActivity {
         shareIntent.setType("text/plain");
         shareIntent.putExtra(Intent.EXTRA_TEXT, "");
         startActivity(shareIntent);
+    }
+    public void  onBackPressed(){
+        this.finish();
     }
 }
