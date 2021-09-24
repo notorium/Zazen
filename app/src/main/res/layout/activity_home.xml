@@ -74,7 +74,7 @@
             android:textColor="#000000"
             android:textSize="24sp"
             app:drawableLeftCompat="@drawable/ic_account_circle_black_36dp"
-            app:drawableTint="#000000"
+            app:drawableTint="#646464"
             app:layout_constraintEnd_toStartOf="@+id/accountMenu"
             app:layout_constraintTop_toTopOf="parent" />
 
