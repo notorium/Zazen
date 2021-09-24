@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/loginScreen"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#E6424242"
-    android:elevation="10dp">
+    tools:context=".activity.LoginFragment">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/loginMenu"
@@ -115,4 +116,5 @@
             app:layout_constraintTop_toBottomOf="@+id/errorText" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
+
 </androidx.constraintlayout.widget.ConstraintLayout>

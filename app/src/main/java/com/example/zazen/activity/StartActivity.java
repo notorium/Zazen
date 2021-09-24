@@ -8,33 +8,65 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.example.zazen.R;
 import com.example.zazen.async.HttpRequest_GET;
 
 public class StartActivity extends AppCompatActivity {
-    private Button loginButton;
-    private TextView username,userid,accountIcon;
-    static SharedPreferences loginStatus;
+    private Button loginButton, loginMenuButton;
+    private ImageButton accountIcon;
+    private TextView username, userid, errorText;
+    private EditText useridInput, passwordInput;
+    private View loginMenu, loginScreen;
 
+    static SharedPreferences loginStatus;
+    static SharedPreferences.Editor editor;
+
+    private boolean accountFlg = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
+
+        loginMenu = findViewById(R.id.loginMenu);
+        loginMenuButton = findViewById(R.id.loginMenuButton);
+        username = findViewById(R.id.username);
+        userid = findViewById(R.id.userid);
+        accountIcon = findViewById(R.id.accountIcon);
+
+        loginScreen = findViewById(R.id.loginScreen);
         loginButton = findViewById(R.id.loginMenuButton);
-        username=findViewById(R.id.username);
-        userid=findViewById(R.id.userid);
-        HttpRequest_GET httpRequestPost = new HttpRequest_GET(this);
-        httpRequestPost.execute("http://fukuiohr2.sakura.ne.jp/2021/Zazen/postdata.php");
+        errorText = findViewById(R.id.errorText);
+        useridInput = findViewById(R.id.userid_editText);
+        passwordInput = findViewById(R.id.password_editText);
+
+        accountIcon.setOnClickListener(v -> {
+            if (accountFlg) {
+                loginMenu.setVisibility(View.VISIBLE);
+                accountFlg = false;
+            } else {
+                loginMenu.setVisibility(View.GONE);
+                accountFlg = true;
+            }
+        });
+
+        loginMenuButton.setOnClickListener(v -> {
+            loginScreen.setVisibility(View.VISIBLE);
+        });
+
+    }
+
+    public void login() {
 
     }
 
     public void config(View v) {
         Intent intent = new Intent(getApplicationContext(), ConfigActivity.class);
         startActivity(intent);
-
     }
 
     public void onBackPressed() {
@@ -48,7 +80,6 @@ public class StartActivity extends AppCompatActivity {
                 })
                 .setNegativeButton("いいえ", null)
                 .show();
-
     }
 
     public void onDestroy() {

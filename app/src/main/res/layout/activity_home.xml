@@ -18,15 +18,15 @@
         app:layout_constraintVertical_bias="0.0">
 
         <include
-            android:id="@+id/accountMenu"
+            android:id="@+id/loginMenu"
             layout="@layout/account"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
             android:layout_marginEnd="20dp"
             android:layout_marginRight="20dp"
+            android:visibility="gone"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toBottomOf="@+id/accountIcon" />
 
         <TextView
             android:id="@+id/appTitle"
@@ -65,17 +65,40 @@
             app:layout_constraintStart_toStartOf="@+id/startButton"
             app:layout_constraintTop_toBottomOf="@+id/startButton" />
 
-        <TextView
+        <ImageButton
             android:id="@+id/accountIcon"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
-            android:text=""
-            android:textColor="#000000"
-            android:textSize="24sp"
-            app:drawableLeftCompat="@drawable/ic_account_circle_black_36dp"
-            app:drawableTint="#646464"
-            app:layout_constraintEnd_toStartOf="@+id/accountMenu"
+            android:layout_marginEnd="20dp"
+            android:layout_marginRight="20dp"
+            android:background="#FFFFFF"
+            android:src="@drawable/ic_account_circle_black_36dp"
+            android:tint="#646464"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+<!--        <include-->
+<!--            android:id="@+id/include"-->
+<!--            layout="@layout/login"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="match_parent"-->
+<!--            android:visibility="gone"-->
+<!--            app:layout_constraintBottom_toBottomOf="parent"-->
+<!--            app:layout_constraintEnd_toEndOf="parent"-->
+<!--            app:layout_constraintStart_toStartOf="parent"-->
+<!--            app:layout_constraintTop_toTopOf="parent" />-->
+
+        <androidx.fragment.app.FragmentContainerView
+            android:id="@+id/loginScreen"
+            android:name="com.example.zazen.activity.LoginFragment"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:elevation="10dp"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
 
