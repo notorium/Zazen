@@ -6,12 +6,14 @@ import androidx.fragment.app.Fragment;
 
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
 import com.example.zazen.R;
+import com.example.zazen.async.HttpRequest_POST_Login;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -58,17 +60,18 @@ public class LoginFragment extends Fragment {
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
-        loginScreen = view.findViewById(R.id.loginScreen);
-        loginButton = view.findViewById(R.id.loginMenuButton);
-        errorText = view.findViewById(R.id.errorText);
-        useridInput = view.findViewById(R.id.userid_editText);
-        passwordInput = view.findViewById(R.id.password_editText);
+        loginScreen = getActivity().findViewById(R.id.loginScreen);
+        loginButton = getActivity().findViewById(R.id.loginButton);
+        errorText = getActivity().findViewById(R.id.errorText);
+        useridInput = getActivity().findViewById(R.id.userid_editText);
+        passwordInput = getActivity().findViewById(R.id.password_editText);
+
+        loginButton.setOnClickListener(v -> loginButton());
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
     }
 
     @Override
@@ -76,5 +79,14 @@ public class LoginFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_login, container, false);
+    }
+
+    public void loginButton() {
+        String postStr = "{\"user_id\":\"" + useridInput.getText().toString() +
+                "\",\"password\":\"" + passwordInput.getText().toString() +
+                "\"}";
+        System.out.println(postStr);
+//        HttpRequest_POST_Login login = new HttpRequest_POST_Login(this.getActivity(),postStr);
+//        login.execute("http://fukuiohr2.sakura.ne.jp/2021/Zazen/login.php");
     }
 }

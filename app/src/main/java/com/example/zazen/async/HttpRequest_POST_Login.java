@@ -1,10 +1,11 @@
 package com.example.zazen.async;
 
 import android.app.Activity;
-import android.graphics.Bitmap;
 import android.os.AsyncTask;
+import android.widget.TextView;
 
-import org.json.JSONArray;
+import com.example.zazen.R;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -12,14 +13,21 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
-public class HttpRequest_GET extends AsyncTask<String, Void, JSONObject> {
-    private Activity callerActivity;
+import static com.example.zazen.activity.StartActivity.login_editor;
 
-    public HttpRequest_GET(Activity activity) {
+public class HttpRequest_POST_Login extends AsyncTask<String, Void, JSONObject> {
+    private Activity callerActivity;
+    private TextView errorText;
+    private String postData;
+
+    public HttpRequest_POST_Login(Activity activity, String string) {
         callerActivity = activity;
+        postData = string;
+        errorText = callerActivity.findViewById(R.id.errorText);
     }
 
     @Override
@@ -36,6 +44,10 @@ public class HttpRequest_GET extends AsyncTask<String, Void, JSONObject> {
             con.setRequestProperty("Content-Type", "application/json;charset=utf-8");
             con.connect();
 
+            OutputStreamWriter out = new OutputStreamWriter(con.getOutputStream());
+            out.write(postData);
+            out.flush();
+
             InputStream stream = con.getInputStream();
             BufferedReader reader = new BufferedReader(new InputStreamReader(stream, "UTF-8"));
             String line = "";
@@ -47,6 +59,7 @@ public class HttpRequest_GET extends AsyncTask<String, Void, JSONObject> {
 
         } catch (IOException e) {
             e.printStackTrace();
+            errorText.setText("通信エラーが発生しました");
         } catch (JSONException e) {
             e.printStackTrace();
         } finally {
@@ -55,24 +68,29 @@ public class HttpRequest_GET extends AsyncTask<String, Void, JSONObject> {
 
         return json;
     }
+
     public void onPostExecute(JSONObject json) {
-        StringBuilder builder = new StringBuilder();
+        boolean result = false;
+        String userid = null, username = null, password = null;
         try {
-            JSONArray array = json.getJSONArray("");
-//            for (int i = 0; i < array.length(); i++) {
-//                JSONObject obj = array.getJSONObject(i);
-//                builder.append(obj.getString("no") + "\n");
-//                builder.append(obj.getString("name") + "\n");
-//                builder.append(obj.getJSONObject("address").getString("state"));
-//                builder.append(obj.getJSONObject("address").getString("city"));
-//                builder.append(obj.getJSONObject("address").getString("address1") + "\n");
-//                builder.append(obj.getString("phone") + "\n");
-//                builder.append(obj.getString("mail") + "\n");
-//            }
+            result = json.getBoolean("result");
+            userid = json.getString("UserId");
+            username = json.getString("UserName");
+            password = json.getString("Password");
             System.out.println(json);
         } catch (JSONException e) {
             System.out.println(e);
             e.printStackTrace();
+        }
+
+        if (result) {
+            login_editor.putString("UserId", userid).apply();
+            login_editor.putString("UserName", username).apply();
+            login_editor.putString("Password", password).apply();
+            login_editor.putBoolean("LoginFlg",true).apply();
+            callerActivity.finish();
+        } else {
+            errorText.setText("ユーザ名またはパスワードが違います。");
         }
     }
 }

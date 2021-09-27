@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
 
+import com.example.zazen.activity.LoginFragment;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -15,11 +17,11 @@ import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
-public class HttpRequest_POST extends AsyncTask<String, Void, JSONObject> {
+public class HttpRequest_POST_Data extends AsyncTask<String, Void, JSONObject> {
     private Activity callerActivity;
     private String postData;
 
-    public HttpRequest_POST(Activity activity, String string) {
+    public HttpRequest_POST_Data(Activity activity, String string) {
         callerActivity = activity;
         postData = string;
     }

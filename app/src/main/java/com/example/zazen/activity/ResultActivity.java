@@ -9,8 +9,7 @@ import android.widget.EditText;
 import android.widget.SeekBar;
 
 import com.example.zazen.R;
-import com.example.zazen.async.HttpRequest_GET_Img;
-import com.example.zazen.async.HttpRequest_POST;
+import com.example.zazen.async.HttpRequest_POST_Data;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -77,7 +76,7 @@ public class ResultActivity extends AppCompatActivity {
                 "\",\"rotationdata\":\"" + rotationData +
                 "\",\"weather_id\":\"" + "1" +
                 "\"}";
-        HttpRequest_POST httpRequestPost = new HttpRequest_POST(this, postStr);
+        HttpRequest_POST_Data httpRequestPost = new HttpRequest_POST_Data(this, postStr);
         httpRequestPost.execute("http://fukuiohr2.sakura.ne.jp/2021/Zazen/postdata.php");
 //        HttpRequest_GET_Img httpRequestGetImg = new HttpRequest_GET_Img(this, "test_");
 //        httpRequestGetImg.execute("http://fukuiohr2.sakura.ne.jp/2021/Zazen/postdata.php");

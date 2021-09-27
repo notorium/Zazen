@@ -13,48 +13,60 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.example.zazen.R;
-import com.example.zazen.async.HttpRequest_GET;
 
 public class StartActivity extends AppCompatActivity {
-    private Button loginButton, loginMenuButton;
+    private Button startButton, ruleButton, loginMenuButton;
     private ImageButton accountIcon;
-    private TextView username, userid, errorText;
-    private EditText useridInput, passwordInput;
+    private TextView username, userid;
     private View loginMenu, loginScreen;
 
-    static SharedPreferences loginStatus;
-    static SharedPreferences.Editor editor;
+    public static SharedPreferences loginStatus;
+    public static SharedPreferences.Editor login_editor;
 
-    private boolean accountFlg = true;
+    private boolean accountOpenFlg = true, loginOpenFlg = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
 
+        ruleButton = findViewById(R.id.ruleButton);
+        loginScreen = findViewById(R.id.loginScreen);
+
         loginMenu = findViewById(R.id.loginMenu);
         loginMenuButton = findViewById(R.id.loginMenuButton);
         username = findViewById(R.id.username);
         userid = findViewById(R.id.userid);
         accountIcon = findViewById(R.id.accountIcon);
+        startButton = findViewById(R.id.startButton);
 
-        loginScreen = findViewById(R.id.loginScreen);
-        loginButton = findViewById(R.id.loginMenuButton);
-        errorText = findViewById(R.id.errorText);
-        useridInput = findViewById(R.id.userid_editText);
-        passwordInput = findViewById(R.id.password_editText);
+        loginStatus = getSharedPreferences("Login", MODE_PRIVATE);
+        login_editor = loginStatus.edit();
+
+        if (!loginStatus.getBoolean("LoginFlg", false)) {
+            login_editor.putString("UserId", "").apply();
+            login_editor.putString("UserName", "ゲストユーザー").apply();
+            login_editor.putString("Password", "").apply();
+            userid.setText(loginStatus.getString("UserID", ""));
+            username.setText(loginStatus.getString("UserName", "ゲストユーザー"));
+        } else {
+
+        }
 
         accountIcon.setOnClickListener(v -> {
-            if (accountFlg) {
+            if (accountOpenFlg) {
                 loginMenu.setVisibility(View.VISIBLE);
-                accountFlg = false;
+                accountOpenFlg = false;
             } else {
                 loginMenu.setVisibility(View.GONE);
-                accountFlg = true;
+                accountOpenFlg = true;
             }
         });
 
         loginMenuButton.setOnClickListener(v -> {
+            loginOpenFlg = true;
+            startButton.setEnabled(false);
+            ruleButton.setEnabled(false);
             loginScreen.setVisibility(View.VISIBLE);
         });
 
@@ -70,16 +82,23 @@ public class StartActivity extends AppCompatActivity {
     }
 
     public void onBackPressed() {
-        new AlertDialog.Builder(this)
-                //.setTitle("開始前確認")
-                .setCancelable(false)
-                .setMessage("アプリを終了しますか？")
-                .setPositiveButton("はい", (dialog, which) -> {
-                    this.finish();
-                    this.moveTaskToBack(true);
-                })
-                .setNegativeButton("いいえ", null)
-                .show();
+        if (loginOpenFlg) {
+            loginOpenFlg = false;
+            startButton.setEnabled(true);
+            ruleButton.setEnabled(true);
+            loginScreen.setVisibility(View.GONE);
+        } else {
+            new AlertDialog.Builder(this)
+                    //.setTitle("開始前確認")
+                    .setCancelable(false)
+                    .setMessage("アプリを終了しますか？")
+                    .setPositiveButton("はい", (dialog, which) -> {
+                        this.finish();
+                        this.moveTaskToBack(true);
+                    })
+                    .setNegativeButton("いいえ", null)
+                    .show();
+        }
     }
 
     public void onDestroy() {
