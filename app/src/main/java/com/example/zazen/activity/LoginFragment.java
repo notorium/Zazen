@@ -1,5 +1,7 @@
 package com.example.zazen.activity;
 
+import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -14,6 +16,8 @@ import android.widget.TextView;
 
 import com.example.zazen.R;
 import com.example.zazen.async.HttpRequest_POST_Login;
+
+import static com.example.zazen.activity.StartActivity.loginStatus;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -82,11 +86,18 @@ public class LoginFragment extends Fragment {
     }
 
     public void loginButton() {
+        loginButton.setEnabled(false);
         String postStr = "{\"user_id\":\"" + useridInput.getText().toString() +
                 "\",\"password\":\"" + passwordInput.getText().toString() +
                 "\"}";
         System.out.println(postStr);
-//        HttpRequest_POST_Login login = new HttpRequest_POST_Login(this.getActivity(),postStr);
-//        login.execute("http://fukuiohr2.sakura.ne.jp/2021/Zazen/login.php");
+        HttpRequest_POST_Login login = new HttpRequest_POST_Login(this.getActivity(), postStr);
+        login.execute("http://fukuiohr2.sakura.ne.jp/2021/Zazen/login.php");
+        if (loginStatus.getBoolean("LoginFlg", false)) {
+            errorText.setText("ログインしました");
+            errorText.setTextColor(Color.rgb(0,255,0));
+        } else {
+            loginButton.setEnabled(true);
+        }
     }
 }

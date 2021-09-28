@@ -1,10 +1,14 @@
 package com.example.zazen.async;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
+import android.graphics.Color;
 import android.os.AsyncTask;
+import android.widget.Button;
 import android.widget.TextView;
 
 import com.example.zazen.R;
+import com.example.zazen.activity.LoginFragment;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -20,14 +24,17 @@ import java.net.URL;
 import static com.example.zazen.activity.StartActivity.login_editor;
 
 public class HttpRequest_POST_Login extends AsyncTask<String, Void, JSONObject> {
-    private Activity callerActivity;
+    private final Activity callerActivity;
     private TextView errorText;
-    private String postData;
+    private Button loginButton;
+    private final String postData;
+    private ProgressDialog loginProgress;
 
     public HttpRequest_POST_Login(Activity activity, String string) {
         callerActivity = activity;
         postData = string;
         errorText = callerActivity.findViewById(R.id.errorText);
+        loginButton = callerActivity.findViewById(R.id.loginButton);
     }
 
     @Override
@@ -60,6 +67,7 @@ public class HttpRequest_POST_Login extends AsyncTask<String, Void, JSONObject> 
         } catch (IOException e) {
             e.printStackTrace();
             errorText.setText("通信エラーが発生しました");
+            errorText.setTextColor(Color.rgb(255,0,0));
         } catch (JSONException e) {
             e.printStackTrace();
         } finally {
@@ -67,6 +75,15 @@ public class HttpRequest_POST_Login extends AsyncTask<String, Void, JSONObject> 
         }
 
         return json;
+    }
+
+    @Override
+
+    protected void onPreExecute() {
+        loginProgress = new ProgressDialog(this.callerActivity);
+        loginProgress.setMessage("ログイン中...");
+        loginProgress.show();
+        return;
     }
 
     public void onPostExecute(JSONObject json) {
@@ -78,19 +95,21 @@ public class HttpRequest_POST_Login extends AsyncTask<String, Void, JSONObject> 
             username = json.getString("UserName");
             password = json.getString("Password");
             System.out.println(json);
+            if (result) {
+                login_editor.putString("UserId", userid).apply();
+                login_editor.putString("UserName", username).apply();
+                login_editor.putString("Password", password).apply();
+                login_editor.putBoolean("LoginFlg", true).apply();
+            } else {
+                loginProgress.dismiss();
+                errorText.setText("ユーザ名またはパスワードが違います。");
+                errorText.setTextColor(Color.rgb(255,0,0));
+            }
         } catch (JSONException e) {
             System.out.println(e);
             e.printStackTrace();
         }
-
-        if (result) {
-            login_editor.putString("UserId", userid).apply();
-            login_editor.putString("UserName", username).apply();
-            login_editor.putString("Password", password).apply();
-            login_editor.putBoolean("LoginFlg",true).apply();
-            callerActivity.finish();
-        } else {
-            errorText.setText("ユーザ名またはパスワードが違います。");
-        }
+        login_editor.putBoolean("LoginFlg", true).apply();
+        loginProgress.dismiss();
     }
 }
