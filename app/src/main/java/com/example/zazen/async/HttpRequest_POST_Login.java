@@ -1,5 +1,6 @@
 package com.example.zazen.async;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.graphics.Color;
@@ -27,6 +28,7 @@ import static com.example.zazen.activity.StartActivity.loginStatus;
 import static com.example.zazen.activity.StartActivity.login_editor;
 
 public class HttpRequest_POST_Login extends AsyncTask<String, Void, JSONObject> {
+
     private final Activity callerActivity;
     private TextView errorText;
     private Button loginButton;
@@ -93,18 +95,16 @@ public class HttpRequest_POST_Login extends AsyncTask<String, Void, JSONObject> 
 
     public void onPostExecute(JSONObject json) {
         boolean result = false;
-        String userid = null, username = null, password = null;
+        String userid = null, username = null;
         System.out.println(json);
         try {
             result = json.getBoolean("result");
             userid = json.getString("UserId");
             username = json.getString("UserName");
-            password = json.getString("Password");
 
             if (result) {
                 login_editor.putString("UserId", userid).apply();
                 login_editor.putString("UserName", username).apply();
-                login_editor.putString("Password", password).apply();
                 login_editor.putBoolean("LoginFlg", true).apply();
             } else {
                 errorText.setText("ユーザIDまたはパスワードが違います。");

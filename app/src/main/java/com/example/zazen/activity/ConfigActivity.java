@@ -29,7 +29,7 @@ public class ConfigActivity extends AppCompatActivity {
 
         //各ツールの変数設定
         setTime = findViewById(R.id.time_seekBar);
-        setGyro = findViewById(R.id.gyro_Switch);
+        setGyro = findViewById(R.id.gyroSwitch);
         setDevice = findViewById(R.id.device_radioGroup);
         Dset1 = findViewById(R.id.radioButton4);
         Dset2 = findViewById(R.id.radioButton5);

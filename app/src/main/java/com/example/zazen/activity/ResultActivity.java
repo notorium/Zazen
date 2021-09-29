@@ -29,6 +29,7 @@ public class ResultActivity extends AppCompatActivity {
 
     private int selfAssessment;
     private boolean loginOpenFlg = false;
+    public static boolean postFlg = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,6 +43,8 @@ public class ResultActivity extends AppCompatActivity {
 
         accelerationData = gyroFlg ? MainActivity.accelerationData.toString() : "";
         rotationData = gyroFlg ? MainActivity.rotationData.toString() : "";
+
+        resultButton.setText(StartActivity.loginStatus.getBoolean("LoginFlg", false) ? "結果を送信" : "ログイン");
 
         assessment_seekBar.setOnSeekBarChangeListener(
                 new SeekBar.OnSeekBarChangeListener() {
@@ -97,15 +100,8 @@ public class ResultActivity extends AppCompatActivity {
                     .setNegativeButton("いいえ", null)
                     .show();
         } else {
-            new AlertDialog.Builder(this)
-                    .setCancelable(false)
-                    .setMessage("ログインしますか？")
-                    .setPositiveButton("はい", (dialog, which) -> {
-                        loginScreen.setVisibility(View.VISIBLE);
-                        loginOpenFlg = true;
-                    })
-                    .setNegativeButton("いいえ", null)
-                    .show();
+            loginScreen.setVisibility(View.VISIBLE);
+            loginOpenFlg = true;
         }
     }
 
@@ -120,11 +116,29 @@ public class ResultActivity extends AppCompatActivity {
         if (loginOpenFlg) {
             loginScreen.setVisibility(View.GONE);
             loginOpenFlg = false;
+            if (StartActivity.loginStatus.getBoolean("LoginFlg", false)) {
+                resultButton.setText("結果を送信");
+            }
         } else {
-            Intent intent = new Intent(getApplicationContext(), StartActivity.class);
-            startActivity(intent);
-            this.finish();
-        }
+            if (postFlg) {
+                Intent intent = new Intent(getApplicationContext(), StartActivity.class);
+                startActivity(intent);
+                this.finish();
+            } else {
+                new AlertDialog.Builder(this)
+                        .setCancelable(false)
+                        .setTitle("データ送信未完了")
+                        .setMessage("記録を送信をせずにホーム画面へ戻りますか？\n※記録は破棄されます。")
+                        .setPositiveButton("はい", (dialog, which) -> {
+                            Intent intent = new Intent(getApplicationContext(), StartActivity.class);
+                            startActivity(intent);
+                            this.finish();
+                        })
+                        .setNegativeButton("いいえ", null)
+                        .show();
+            }
 
+
+        }
     }
 }

@@ -10,6 +10,8 @@ import androidx.appcompat.app.AlertDialog;
 
 import com.example.zazen.R;
 import com.example.zazen.activity.LoginFragment;
+import com.example.zazen.activity.ResultActivity;
+import com.example.zazen.activity.StartActivity;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -88,23 +90,25 @@ public class HttpRequest_POST_Data extends AsyncTask<String, Void, JSONObject> {
     }
 
     public void onPostExecute(JSONObject json) {
-        if(errorFlg){
+        if (errorFlg) {
             resultButton.setEnabled(true);
             new AlertDialog.Builder(this.callerActivity)
                     .setCancelable(false)
                     .setTitle("エラー")
                     .setMessage("通信エラーが発生しました。\n通信環境を整えてやり直してください。")
-                    .setPositiveButton("閉じる",null)
+                    .setPositiveButton("閉じる", null)
                     .show();
-        }else{
+        } else {
             new AlertDialog.Builder(this.callerActivity)
                     .setCancelable(false)
                     .setTitle("送信完了")
                     .setMessage("データの送信が完了しました。")
-                    .setPositiveButton("閉じる",null)
+                    .setPositiveButton("閉じる", null)
                     .show();
+            ResultActivity.postFlg = true;
         }
         postProgress.dismiss();
+
         System.out.println(json);
     }
 }
