@@ -165,14 +165,14 @@
             android:text="結果を共有"
             android:onClick="shareResult"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/button"
+            app:layout_constraintEnd_toStartOf="@+id/postResultButton"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="1.0" />
 
         <Button
-            android:id="@+id/button"
+            android:id="@+id/postResultButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="結果を送信"

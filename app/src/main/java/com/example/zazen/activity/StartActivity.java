@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
@@ -72,7 +73,6 @@ public class StartActivity extends AppCompatActivity {
                 loginScreen.setVisibility(View.VISIBLE);
             }
         });
-        System.out.println(loginStatus.getBoolean("LoginFlg", false));
     }
 
     public void login() {
@@ -83,25 +83,29 @@ public class StartActivity extends AppCompatActivity {
             loginMenuButton.setText("ログイン");
             loginMenuButton.setBackgroundColor(Color.rgb(0, 200, 0));
             login_editor.putString("UserId", "").apply();
-            login_editor.putString("UserName", "ゲストユーザー").apply();
+            login_editor.putString("UserName", "ゲスト").apply();
             login_editor.putString("Password", "").apply();
             login_editor.putBoolean("LoginFlg", false).apply();
 
         }
-        userid.setText(loginStatus.getString("UserID", ""));
-        username.setText(loginStatus.getString("UserName", "ゲストユーザー"));
+        userid.setText("ID:" + loginStatus.getString("UserId", ""));
+        username.setText(loginStatus.getString("UserName", "ゲスト"));
     }
 
     public void logout() {
         loginMenuButton.setText("ログイン");
         loginMenuButton.setBackgroundColor(Color.rgb(0, 200, 0));
         login_editor.putString("UserId", "").apply();
-        login_editor.putString("UserName", "ゲストユーザー").apply();
+        login_editor.putString("UserName", "ゲスト").apply();
         login_editor.putString("Password", "").apply();
         login_editor.putBoolean("LoginFlg", false).apply();
 
-        userid.setText(loginStatus.getString("UserID", ""));
-        username.setText(loginStatus.getString("UserName", "ゲストユーザー"));
+        userid.setText(loginStatus.getString("UserId", ""));
+        username.setText(loginStatus.getString("UserName", "ゲスト"));
+        LoginFragment.loginButton.setEnabled(true);
+        LoginFragment.passwordInput.setEnabled(true);
+        LoginFragment.useridInput.setEnabled(true);
+        LoginFragment.errorText.setText("");
     }
 
     public void config(View v) {

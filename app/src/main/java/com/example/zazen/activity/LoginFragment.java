@@ -1,11 +1,13 @@
 package com.example.zazen.activity;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
 
+import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -57,10 +59,10 @@ public class LoginFragment extends Fragment {
 //        return fragment;
 //    }
 
-    private TextView errorText;
-    private EditText useridInput, passwordInput;
-    private View loginScreen;
-    private Button loginButton;
+    static TextView errorText;
+    static EditText useridInput, passwordInput;
+    static View loginScreen;
+    static Button loginButton;
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
@@ -71,6 +73,11 @@ public class LoginFragment extends Fragment {
         passwordInput = getActivity().findViewById(R.id.password_editText);
 
         loginButton.setOnClickListener(v -> loginButton());
+        loginScreen.setOnClickListener(v -> {
+            useridInput.clearFocus();
+            passwordInput.clearFocus();
+        });
+
     }
 
     @Override
@@ -87,17 +94,13 @@ public class LoginFragment extends Fragment {
 
     public void loginButton() {
         loginButton.setEnabled(false);
-        String postStr = "{\"user_id\":\"" + useridInput.getText().toString() +
-                "\",\"password\":\"" + passwordInput.getText().toString() +
+        useridInput.clearFocus();
+        passwordInput.clearFocus();
+
+        String postStr = "{\"id\":\"" + useridInput.getText().toString() +
+                "\",\"pass\":\"" + passwordInput.getText().toString() +
                 "\"}";
-        System.out.println(postStr);
         HttpRequest_POST_Login login = new HttpRequest_POST_Login(this.getActivity(), postStr);
         login.execute("http://fukuiohr2.sakura.ne.jp/2021/Zazen/login.php");
-        if (loginStatus.getBoolean("LoginFlg", false)) {
-            errorText.setText("ログインしました");
-            errorText.setTextColor(Color.rgb(0,255,0));
-        } else {
-            loginButton.setEnabled(true);
-        }
     }
 }

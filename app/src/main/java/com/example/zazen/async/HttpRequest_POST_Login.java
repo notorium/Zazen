@@ -5,10 +5,12 @@ import android.app.ProgressDialog;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 
 import com.example.zazen.R;
 import com.example.zazen.activity.LoginFragment;
+import com.example.zazen.activity.StartActivity;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -21,12 +23,14 @@ import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
+import static com.example.zazen.activity.StartActivity.loginStatus;
 import static com.example.zazen.activity.StartActivity.login_editor;
 
 public class HttpRequest_POST_Login extends AsyncTask<String, Void, JSONObject> {
     private final Activity callerActivity;
     private TextView errorText;
     private Button loginButton;
+    private EditText useridInput, passwordInput;
     private final String postData;
     private ProgressDialog loginProgress;
 
@@ -35,6 +39,8 @@ public class HttpRequest_POST_Login extends AsyncTask<String, Void, JSONObject> 
         postData = string;
         errorText = callerActivity.findViewById(R.id.errorText);
         loginButton = callerActivity.findViewById(R.id.loginButton);
+        useridInput = callerActivity.findViewById(R.id.userid_editText);
+        passwordInput = callerActivity.findViewById(R.id.password_editText);
     }
 
     @Override
@@ -45,7 +51,7 @@ public class HttpRequest_POST_Login extends AsyncTask<String, Void, JSONObject> 
         try {
             URL url = new URL(params[0]);
             con = (HttpURLConnection) url.openConnection();
-            con.setRequestMethod("GET");
+            con.setRequestMethod("POST");
             con.setDoOutput(true);
             con.setConnectTimeout(5000);
             con.setRequestProperty("Content-Type", "application/json;charset=utf-8");
@@ -66,19 +72,18 @@ public class HttpRequest_POST_Login extends AsyncTask<String, Void, JSONObject> 
 
         } catch (IOException e) {
             e.printStackTrace();
-            errorText.setText("通信エラーが発生しました");
-            errorText.setTextColor(Color.rgb(255,0,0));
+            errorText.setText("通信エラーが発生しました。");
+            errorText.setTextColor(Color.rgb(255, 0, 0));
         } catch (JSONException e) {
+            System.out.println(e);
             e.printStackTrace();
         } finally {
             con.disconnect();
         }
-
         return json;
     }
 
     @Override
-
     protected void onPreExecute() {
         loginProgress = new ProgressDialog(this.callerActivity);
         loginProgress.setMessage("ログイン中...");
@@ -89,27 +94,40 @@ public class HttpRequest_POST_Login extends AsyncTask<String, Void, JSONObject> 
     public void onPostExecute(JSONObject json) {
         boolean result = false;
         String userid = null, username = null, password = null;
+        System.out.println(json);
         try {
             result = json.getBoolean("result");
             userid = json.getString("UserId");
             username = json.getString("UserName");
             password = json.getString("Password");
-            System.out.println(json);
+
             if (result) {
                 login_editor.putString("UserId", userid).apply();
                 login_editor.putString("UserName", username).apply();
                 login_editor.putString("Password", password).apply();
                 login_editor.putBoolean("LoginFlg", true).apply();
             } else {
-                loginProgress.dismiss();
-                errorText.setText("ユーザ名またはパスワードが違います。");
-                errorText.setTextColor(Color.rgb(255,0,0));
+                errorText.setText("ユーザIDまたはパスワードが違います。");
+                errorText.setTextColor(Color.rgb(255, 0, 0));
             }
         } catch (JSONException e) {
             System.out.println(e);
+            errorText.setText("ユーザIDまたはパスワードが違います。");
+            errorText.setTextColor(Color.rgb(255, 0, 0));
             e.printStackTrace();
         }
-        login_editor.putBoolean("LoginFlg", true).apply();
+
+        if (loginStatus.getBoolean("LoginFlg", false)) {
+            errorText.setText("ログインしました");
+            errorText.setTextColor(Color.rgb(0, 200, 0));
+            useridInput.setText("");
+            passwordInput.setText("");
+            useridInput.setEnabled(false);
+            passwordInput.setEnabled(false);
+        } else {
+            loginButton.setEnabled(true);
+        }
+
         loginProgress.dismiss();
     }
 }

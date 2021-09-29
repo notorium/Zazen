@@ -1,10 +1,12 @@
 package com.example.zazen.activity;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.SeekBar;
 
@@ -22,7 +24,11 @@ public class ResultActivity extends AppCompatActivity {
 
     private EditText commentText;
     private SeekBar assessment_seekBar;
+    private View loginScreen;
+    private Button resultButton;
+
     private int selfAssessment;
+    private boolean loginOpenFlg = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,8 +37,9 @@ public class ResultActivity extends AppCompatActivity {
 
         assessment_seekBar = findViewById(R.id.time_seekBar);
         commentText = findViewById(R.id.editText);
+        loginScreen = findViewById(R.id.loginScreen);
+        resultButton = findViewById(R.id.postResultButton);
 
-        Intent intent = getIntent();
         accelerationData = gyroFlg ? MainActivity.accelerationData.toString() : "";
         rotationData = gyroFlg ? MainActivity.rotationData.toString() : "";
 
@@ -63,23 +70,43 @@ public class ResultActivity extends AppCompatActivity {
     }
 
     public void postResult(View v) {
-        v.setEnabled(false);
-        SimpleDateFormat DF = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss", Locale.JAPAN);
-        String date = DF.format(new Date());
-        String postStr = "{\"user_id\":\"" + "test" +
-                "\",\"date\":\"" + date +
-                "\",\"time\":\"" + "" +
-                "\",\"comment\":\"" + commentText.getText().toString() +
-                "\",\"selfassessment\":\"" + selfAssessment +
-                "\",\"flg\":\"" + (gyroFlg ? "1" : "0") +
-                "\",\"accelerationdata\":\"" + accelerationData +
-                "\",\"rotationdata\":\"" + rotationData +
-                "\",\"weather_id\":\"" + "1" +
-                "\"}";
-        HttpRequest_POST_Data httpRequestPost = new HttpRequest_POST_Data(this, postStr);
-        httpRequestPost.execute("http://fukuiohr2.sakura.ne.jp/2021/Zazen/postdata.php");
+        if (StartActivity.loginStatus.getBoolean("LoginFlg", false)) {
+            v.setEnabled(false);
+            new AlertDialog.Builder(this)
+                    .setCancelable(false)
+                    .setTitle("送信前確認")
+                    .setMessage("座禅の記録を送信しますか？")
+                    .setPositiveButton("はい", (dialog, which) -> {
+                        SimpleDateFormat DF = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss", Locale.JAPAN);
+                        String date = DF.format(new Date());
+                        String postStr = "{\"user_id\":\"" + StartActivity.loginStatus.getString("UserId", "") +
+                                "\",\"date\":\"" + date +
+                                "\",\"time\":\"" + "" +
+                                "\",\"comment\":\"" + commentText.getText().toString() +
+                                "\",\"selfassessment\":\"" + selfAssessment +
+                                "\",\"flg\":\"" + (gyroFlg ? "1" : "0") +
+                                "\",\"accelerationdata\":\"" + accelerationData +
+                                "\",\"rotationdata\":\"" + rotationData +
+                                "\",\"weather_id\":\"" + "1" +
+                                "\"}";
+                        HttpRequest_POST_Data httpRequestPost = new HttpRequest_POST_Data(this, postStr);
+                        httpRequestPost.execute("http://fukuiohr2.sakura.ne.jp/2021/Zazen/postdata.php");
 //        HttpRequest_GET_Img httpRequestGetImg = new HttpRequest_GET_Img(this, "test_");
 //        httpRequestGetImg.execute("http://fukuiohr2.sakura.ne.jp/2021/Zazen/postdata.php");
+                    })
+                    .setNegativeButton("いいえ", null)
+                    .show();
+        } else {
+            new AlertDialog.Builder(this)
+                    .setCancelable(false)
+                    .setMessage("ログインしますか？")
+                    .setPositiveButton("はい", (dialog, which) -> {
+                        loginScreen.setVisibility(View.VISIBLE);
+                        loginOpenFlg = true;
+                    })
+                    .setNegativeButton("いいえ", null)
+                    .show();
+        }
     }
 
     public void shareResult(View v) {
@@ -88,7 +115,16 @@ public class ResultActivity extends AppCompatActivity {
         shareIntent.putExtra(Intent.EXTRA_TEXT, "");
         startActivity(shareIntent);
     }
-    public void  onBackPressed(){
-        this.finish();
+
+    public void onBackPressed() {
+        if (loginOpenFlg) {
+            loginScreen.setVisibility(View.GONE);
+            loginOpenFlg = false;
+        } else {
+            Intent intent = new Intent(getApplicationContext(), StartActivity.class);
+            startActivity(intent);
+            this.finish();
+        }
+
     }
 }
