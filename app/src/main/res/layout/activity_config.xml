@@ -19,7 +19,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/mode_radioGroup" />
+        app:layout_constraintTop_toBottomOf="@+id/modeGroup" />
 
     <SeekBar
         android:id="@+id/time_seekBar"
@@ -135,7 +135,7 @@
         app:layout_constraintTop_toBottomOf="@+id/textView8" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/mode_radioGroup"
+        android:id="@+id/modeGroup"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="10dp"
@@ -147,37 +147,27 @@
         app:layout_constraintTop_toBottomOf="@+id/textView2">
 
         <Button
-            android:id="@+id/button1"
+            android:id="@+id/modeButton1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:enabled="false"
-
             android:text="Mode1"
-            android:textColor="@color/black"
-            app:backgroundTint="#C8C8C8"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
         <Button
-            android:id="@+id/button2"
+            android:id="@+id/modeButton2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:enabled="false"
             android:text="Mode2"
-            android:textColor="@color/black"
-            app:backgroundTint="#C8C8C8"
-            app:layout_constraintEnd_toStartOf="@+id/button3"
-            app:layout_constraintStart_toEndOf="@+id/button1"
+            app:layout_constraintEnd_toStartOf="@+id/modeButton3"
+            app:layout_constraintStart_toEndOf="@+id/modeButton1"
             app:layout_constraintTop_toTopOf="parent" />
 
         <Button
-            android:id="@+id/button3"
+            android:id="@+id/modeButton3"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:enabled="false"
             android:text="Mode3"
-            android:textColor="@color/black"
-            app:backgroundTint="#C8C8C8"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
     </androidx.constraintlayout.widget.ConstraintLayout>
@@ -223,14 +213,14 @@
         app:layout_constraintTop_toBottomOf="@+id/textView3">
 
         <RadioButton
-            android:id="@+id/radioButton4"
+            android:id="@+id/radioButton1"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="手の上" />
 
         <RadioButton
-            android:id="@+id/radioButton5"
+            android:id="@+id/radioButton2"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"

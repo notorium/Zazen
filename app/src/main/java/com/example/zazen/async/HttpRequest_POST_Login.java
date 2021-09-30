@@ -1,6 +1,5 @@
 package com.example.zazen.async;
 
-import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.graphics.Color;
@@ -10,8 +9,6 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.example.zazen.R;
-import com.example.zazen.activity.LoginFragment;
-import com.example.zazen.activity.StartActivity;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -108,18 +105,18 @@ public class HttpRequest_POST_Login extends AsyncTask<String, Void, JSONObject> 
                 login_editor.putBoolean("LoginFlg", true).apply();
             } else {
                 errorText.setText("ユーザIDまたはパスワードが違います。");
-                errorText.setTextColor(Color.rgb(255, 0, 0));
+                errorText.setTextColor(callerActivity.getResources().getColor(R.color.red));
             }
         } catch (JSONException e) {
             System.out.println(e);
             errorText.setText("ユーザIDまたはパスワードが違います。");
-            errorText.setTextColor(Color.rgb(255, 0, 0));
+            errorText.setTextColor(callerActivity.getResources().getColor(R.color.red));
             e.printStackTrace();
         }
 
         if (loginStatus.getBoolean("LoginFlg", false)) {
             errorText.setText("ログインしました");
-            errorText.setTextColor(Color.rgb(0, 200, 0));
+            errorText.setTextColor(callerActivity.getResources().getColor(R.color.green));
             useridInput.setText("");
             passwordInput.setText("");
             useridInput.setEnabled(false);

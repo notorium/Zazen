@@ -5,9 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Color;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
@@ -78,10 +76,10 @@ public class StartActivity extends AppCompatActivity {
     public void login() {
         if (loginStatus.getBoolean("LoginFlg", false)) {
             loginMenuButton.setText("ログアウト");
-            loginMenuButton.setBackgroundColor(Color.rgb(255, 0, 0));
+            loginMenuButton.setBackgroundColor(getResources().getColor(R.color.red));
         } else {
             loginMenuButton.setText("ログイン");
-            loginMenuButton.setBackgroundColor(Color.rgb(0, 200, 0));
+            loginMenuButton.setBackgroundColor(getResources().getColor(R.color.green));
             login_editor.putString("UserId", "").apply();
             login_editor.putString("UserName", "ゲスト").apply();
             login_editor.putString("Password", "").apply();
@@ -94,7 +92,7 @@ public class StartActivity extends AppCompatActivity {
 
     public void logout() {
         loginMenuButton.setText("ログイン");
-        loginMenuButton.setBackgroundColor(Color.rgb(0, 200, 0));
+        loginMenuButton.setBackgroundColor(getResources().getColor(R.color.green));
         login_editor.putString("UserId", "").apply();
         login_editor.putString("UserName", "ゲスト").apply();
         login_editor.putString("Password", "").apply();
