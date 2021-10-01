@@ -3,6 +3,7 @@ package com.example.zazen.activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.ColorStateList;
+import android.graphics.PorterDuff;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
@@ -55,6 +56,7 @@ public class ConfigActivity extends AppCompatActivity {
         if (config_value.getBoolean("GyroChecked", false)) {
             Dset2.setEnabled(false);
         }
+        mode3.setBackgroundColor(getResources().getColor(R.color.red));
         editor.putInt("ModeNumber", 2);
 
         //時間設定(シークバー)
@@ -130,16 +132,16 @@ public class ConfigActivity extends AppCompatActivity {
             setGyro.setChecked(true);
             setDevice.check(R.id.radioButton1);
             Dset2.setEnabled(false);
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                setTime.setThumbTintList(ColorStateList.valueOf(getResources().getColor(R.color.red)));
-            }
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                setGyro.setThumbTintList(ColorStateList.valueOf(getColor(R.color.red)));
-                setGyro.setTrackTintList(ColorStateList.valueOf(getColor(R.color.red)));
-            }
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                Dset1.setButtonTintList(ColorStateList.valueOf(getResources().getColor(R.color.red)));
-            }
+//            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+//                setTime.setThumbTintList(ColorStateList.valueOf(getResources().getColor(R.color.red)));
+//            }
+//            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+//                setGyro.setThumbTintList(ColorStateList.valueOf(getColor(R.color.red)));
+//                setGyro.setTrackTintList(ColorStateList.valueOf(getColor(R.color.red)));
+//            }
+//            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+//                Dset1.setButtonTintList(ColorStateList.valueOf(getResources().getColor(R.color.red)));
+//            }
             editor.putInt("SeekValue", setTime.getProgress()).apply();
             editor.putBoolean("GyroChecked", true).apply();
         });
@@ -159,16 +161,19 @@ public class ConfigActivity extends AppCompatActivity {
             mode2.setBackgroundColor(getResources().getColor(R.color.purple_500));
             mode3.setBackgroundColor(getResources().getColor(R.color.red));
 
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                setTime.setThumbTintList(ColorStateList.valueOf(getResources().getColor(R.color.teal_200)));
-            }
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                setGyro.setThumbTintList(ColorStateList.valueOf(getColor(R.color.teal_200)));
-                setGyro.setTrackTintList(ColorStateList.valueOf(getColor(R.color.teal_200)));
-            }
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                Dset1.setButtonTintList(ColorStateList.valueOf(getResources().getColor(R.color.teal_200)));
-            }
+//            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+//                setTime.setThumbTintList(ColorStateList.valueOf(getResources().getColor(R.color.teal_200)));
+//            }
+//            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+//                setGyro.setThumbTintList(ColorStateList.valueOf(getColor(R.color.teal_200)));
+//                setGyro.setTrackTintList(ColorStateList.valueOf(getColor(R.color.teal_200)));
+//            }
+//            setGyro.getThumbDrawable().setColorFilter(getResources().getColor(R.color.teal_200), PorterDuff.Mode.MULTIPLY);
+//            setGyro.getTrackDrawable().setColorFilter(getResources().getColor(R.color.teal_200), PorterDuff.Mode.MULTIPLY);
+//
+//            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+//                Dset1.setButtonTintList(ColorStateList.valueOf(getResources().getColor(R.color.teal_200)));
+//            }
         });
     }
 

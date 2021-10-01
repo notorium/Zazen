@@ -29,6 +29,8 @@ public class ResultActivity extends AppCompatActivity {
 
     private int selfAssessment;
     private boolean loginOpenFlg = false;
+    private String[] modeStr= {"練習","瞑想","フリーカスタム"};
+
     public static boolean postFlg = false;
 
     @Override
@@ -84,7 +86,8 @@ public class ResultActivity extends AppCompatActivity {
                         String date = DF.format(new Date());
                         String postStr = "{\"user_id\":\"" + StartActivity.loginStatus.getString("UserId", "") +
                                 "\",\"date\":\"" + date +
-                                "\",\"time\":\"" + "" +
+                                "\",\"mode\":\"" + modeStr[ConfigActivity.config_value.getInt("ModeNumber", 2)]  +
+                                "\",\"time\":\"" + getIntent().getStringExtra("SetTime") +
                                 "\",\"comment\":\"" + commentText.getText().toString() +
                                 "\",\"selfassessment\":\"" + selfAssessment +
                                 "\",\"flg\":\"" + (gyroFlg ? "1" : "0") +

@@ -51,6 +51,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private CountUp countUp;
     private long[] countNumberList = {180000, 300000, 600000, 1200000, 1800000, 3600000};
     private long countNumber = countNumberList[ConfigActivity.config_value.getInt("SeekValue", 0)];
+    private long firstTime = countNumber;
     private Boolean countUpDownFlag = ConfigActivity.config_value.getInt("SeekValue", 0) != 5;
 
     //センサー変数
@@ -158,7 +159,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         if (countUpDownFlag) {
             countDown = new CountDown(countNumber, 10);
         } else {
-            countUp = new CountUp(countNumber, 10, countNumberList[5]);
+            countUp = new CountUp(countNumber, 10, firstTime);
         }
 
         startScreen.setVisibility(View.GONE);
@@ -238,6 +239,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                             .setMessage("座禅を終了しますか？")
                             .setPositiveButton("はい", (dialog, which) -> {
                                 Intent intent = new Intent(getApplicationContext(), ResultActivity.class);
+                                intent.putExtra("SetTime", dataFormat.format(countNumber));
                                 startActivity(intent);
                                 onStop();
                                 activityFinish = true;
@@ -256,6 +258,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     //結果画面へ遷移
     public void result(View v) {
         Intent intent = new Intent(getApplicationContext(), ResultActivity.class);
+        intent.putExtra("SetTime", dataFormat.format(firstTime));
         startActivity(intent);
         this.finish();
     }
@@ -407,7 +410,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             float vx = vector[0];
             float vy = vector[1];
             float vz = vector[2];
-            System.out.println(vx + "," + vy + "," + vz);
+//            System.out.println(vx + "," + vy + "," + vz);
             if (activityStart && !activityFinish) {
                 SimpleDateFormat DF = new SimpleDateFormat("HH:mm:ss.SSS", Locale.JAPAN);
                 String date = DF.format(new Date());
