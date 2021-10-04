@@ -59,8 +59,8 @@
             android:id="@+id/ruleButton"
             android:layout_width="250dp"
             android:layout_height="wrap_content"
-            android:enabled="false"
             android:text="記録"
+            android:onClick="web"
             app:layout_constraintEnd_toEndOf="@+id/startButton"
             app:layout_constraintStart_toStartOf="@+id/startButton"
             app:layout_constraintTop_toBottomOf="@+id/startButton" />

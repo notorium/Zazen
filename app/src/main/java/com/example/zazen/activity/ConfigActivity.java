@@ -123,7 +123,7 @@ public class ConfigActivity extends AppCompatActivity {
 
         mode1.setOnClickListener(v -> {
             modeNum = 0;
-            editor.putInt("ModeNumber", modeNum);
+            editor.putInt("ModeNumber", modeNum).apply();
             mode1.setBackgroundColor(getResources().getColor(R.color.red));
             mode2.setBackgroundColor(getResources().getColor(R.color.purple_500));
             mode3.setBackgroundColor(getResources().getColor(R.color.purple_500));
@@ -148,7 +148,7 @@ public class ConfigActivity extends AppCompatActivity {
 
         mode2.setOnClickListener(v -> {
             modeNum = 1;
-            editor.putInt("ModeNumber", modeNum);
+            editor.putInt("ModeNumber", modeNum).apply();
             mode1.setBackgroundColor(getResources().getColor(R.color.purple_500));
             mode2.setBackgroundColor(getResources().getColor(R.color.red));
             mode3.setBackgroundColor(getResources().getColor(R.color.purple_500));
@@ -156,7 +156,7 @@ public class ConfigActivity extends AppCompatActivity {
 
         mode3.setOnClickListener(v -> {
             modeNum = 2;
-            editor.putInt("ModeNumber", modeNum);
+            editor.putInt("ModeNumber", modeNum).apply();
             mode1.setBackgroundColor(getResources().getColor(R.color.purple_500));
             mode2.setBackgroundColor(getResources().getColor(R.color.purple_500));
             mode3.setBackgroundColor(getResources().getColor(R.color.red));

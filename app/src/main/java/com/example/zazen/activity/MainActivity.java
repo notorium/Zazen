@@ -27,7 +27,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     //View変数
     private TextView timerText, countdownText;
     private Button resultButton;
-    private View startScreen, poseScreen, tapScreen;
+    private View startScreen, poseScreen, tapScreen, mode1Dialog;
 
     //座禅開始判定
     private boolean activityStart = false;
@@ -119,6 +119,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         poseScreen = findViewById(R.id.poseScreen);
         tapScreen = findViewById(R.id.tapScreen);
 
+        mode1Dialog = this.getLayoutInflater().inflate(R.layout.mode1, null);
+
         accelerationData = new StringBuilder("");
         rotationData = new StringBuilder("");
 
@@ -127,13 +129,19 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         countdownText.setText("");
 
         sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
-
-
+        System.out.println(ConfigActivity.config_value.getInt("ModeNumber", 2));
+        if (ConfigActivity.config_value.getInt("ModeNumber", 2) == 0) {
+            new AlertDialog.Builder(this)
+                    .setCancelable(false)
+                    .setTitle("練習モード")
+                    .setView(mode1Dialog)
+                    .setPositiveButton("閉じる", null)
+                    .show();
+        }
     }
 
     //画面タップ後に座禅スタート
     public void screenTap(View v) {
-
         if (!activityStart && !activityFinish) {
             //3秒のカウントダウン
             if (!ConfigActivity.config_value.getBoolean("GyroChecked", false)) onStop();
@@ -239,7 +247,10 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                             .setMessage("座禅を終了しますか？")
                             .setPositiveButton("はい", (dialog, which) -> {
                                 Intent intent = new Intent(getApplicationContext(), ResultActivity.class);
-                                intent.putExtra("SetTime", dataFormat.format(countNumber));
+                                long second = (countNumber / 1000) % 60;
+                                long minute = (countNumber / (1000 * 60)) % 60;
+                                long hour = (countNumber / (1000 * 60 * 60)) % 24;
+                                intent.putExtra("SetTime", String.format("%02d:%02d:%02d:%d", hour, minute, second, countNumber % 1000));
                                 startActivity(intent);
                                 onStop();
                                 activityFinish = true;
@@ -258,7 +269,10 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     //結果画面へ遷移
     public void result(View v) {
         Intent intent = new Intent(getApplicationContext(), ResultActivity.class);
-        intent.putExtra("SetTime", dataFormat.format(firstTime));
+        long second = (firstTime / 1000) % 60;
+        long minute = (firstTime / (1000 * 60)) % 60;
+        long hour = (firstTime / (1000 * 60 * 60)) % 24;
+        intent.putExtra("SetTime", String.format("%02d:%02d:%02d:%d", hour, minute, second, firstTime % 1000));
         startActivity(intent);
         this.finish();
     }
@@ -464,7 +478,10 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         public void onTick(long millisUntilFinished) {
             // 残り時間を分、秒、ミリ秒に分割
             countNumber = millisUntilFinished;
-            timerText.setText(dataFormat.format(millisUntilFinished));
+            long milli = countNumber % 1000 / 10;
+            long second = (countNumber / 1000) % 60;
+            long minute = (countNumber / (1000 * 60)) % 60;
+            timerText.setText(String.format("%02d:%02d.%02d",  minute, second, milli));
         }
     }
 
@@ -494,7 +511,13 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         @Override
         public void onTick(long millisUntilFinished) {
             countNumber = firstTime - millisUntilFinished;
-            timerText.setText(dataFormat.format(countNumber));
+            if (countNumber == firstTime) {
+                onFinish();
+            }
+            long milli = countNumber % 1000 / 10;
+            long second = (countNumber / 1000) % 60;
+            long minute = (countNumber / (1000 * 60)) % 60;
+            timerText.setText(String.format("%02d:%02d.%02d",  minute, second, milli));
         }
     }
 }

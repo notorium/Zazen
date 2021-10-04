@@ -111,6 +111,11 @@ public class StartActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
+    public void web(View v){
+        Intent intent = new Intent(getApplicationContext(), WebActivity.class);
+        startActivity(intent);
+    }
+
     public void onBackPressed() {
         if (loginOpenFlg) {
             loginOpenFlg = false;
