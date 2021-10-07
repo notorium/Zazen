@@ -29,7 +29,7 @@ public class ResultActivity extends AppCompatActivity {
 
     private int selfAssessment;
     private boolean loginOpenFlg = false;
-    private String[] modeStr= {"練習","瞑想","フリーカスタム"};
+    private String[] modeStr = {"練習", "瞑想", "フリーカスタム"};
 
     public static boolean postFlg = false;
 
@@ -86,7 +86,7 @@ public class ResultActivity extends AppCompatActivity {
                         String date = DF.format(new Date());
                         String postStr = "{\"user_id\":\"" + StartActivity.loginStatus.getString("UserId", "") +
                                 "\",\"date\":\"" + date +
-                                "\",\"mode\":\"" + modeStr[ConfigActivity.config_value.getInt("ModeNumber", 2)]  +
+                                "\",\"mode\":\"" + modeStr[ConfigActivity.config_value.getInt("ModeNumber", 2)] +
                                 "\",\"time\":\"" + getIntent().getStringExtra("SetTime") +
                                 "\",\"comment\":\"" + commentText.getText().toString() +
                                 "\",\"selfassessment\":\"" + selfAssessment +
@@ -116,6 +116,14 @@ public class ResultActivity extends AppCompatActivity {
     }
 
     public void onBackPressed() {
+        backHome();
+    }
+
+    public void onHomeButton(View v) {
+        backHome();
+    }
+
+    public void backHome() {
         if (loginOpenFlg) {
             loginScreen.setVisibility(View.GONE);
             loginOpenFlg = false;
@@ -140,8 +148,7 @@ public class ResultActivity extends AppCompatActivity {
                         .setNegativeButton("いいえ", null)
                         .show();
             }
-
-
         }
     }
+
 }

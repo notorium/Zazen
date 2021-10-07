@@ -4,9 +4,15 @@ import android.content.Intent;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.media.AudioAttributes;
+import android.media.AudioManager;
+import android.media.MediaPlayer;
+import android.media.SoundPool;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Handler;
+import android.provider.MediaStore;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -38,6 +44,10 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     //ポーズ判定
     private boolean activityPose = true;
 
+    //音声データ
+    private SoundPool soundPool;
+    private int se1, se2, se3;
+
     //データフォーマット
     private SimpleDateFormat dataFormat =
             new SimpleDateFormat("mm:ss.SS", Locale.JAPAN);
@@ -52,6 +62,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private long[] countNumberList = {180000, 300000, 600000, 1200000, 1800000, 3600000};
     private long countNumber = countNumberList[ConfigActivity.config_value.getInt("SeekValue", 0)];
     private long firstTime = countNumber;
+    private long oldSec = 0;
     private Boolean countUpDownFlag = ConfigActivity.config_value.getInt("SeekValue", 0) != 5;
 
     //センサー変数
@@ -120,6 +131,23 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         tapScreen = findViewById(R.id.tapScreen);
 
         mode1Dialog = this.getLayoutInflater().inflate(R.layout.mode1, null);
+
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+            soundPool = new SoundPool(5, AudioManager.STREAM_MUSIC, 0);
+        } else {
+            AudioAttributes attr = new AudioAttributes.Builder()
+                    .setUsage(AudioAttributes.USAGE_MEDIA)
+                    .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
+                    .build();
+            soundPool = new SoundPool.Builder()
+                    .setAudioAttributes(attr)
+                    .setMaxStreams(5)
+                    .build();
+        }
+        se1 = soundPool.load(this, R.raw.se1, 1);
+        se2 = soundPool.load(this, R.raw.se2, 1);
+        se3 = soundPool.load(this, R.raw.se3, 1);
+
 
         accelerationData = new StringBuilder("");
         rotationData = new StringBuilder("");
@@ -213,6 +241,11 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                         .setMessage("同じ設定のままやり直しますか？")
                         .setPositiveButton("はい", (dialog, which) -> {
                             onStop();
+                            if (countUpDownFlag) {
+                                countDown.cancel();
+                            } else {
+                                countUp.cancel();
+                            }
                             Intent intent = getIntent();
                             overridePendingTransition(0, 0);
                             intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
@@ -234,6 +267,11 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                             .setPositiveButton("はい", (dialog, which) -> {
                                 Intent intent = new Intent(getApplicationContext(), StartActivity.class);
                                 startActivity(intent);
+                                if (countUpDownFlag) {
+                                    countDown.cancel();
+                                } else {
+                                    countUp.cancel();
+                                }
                                 onStop();
                                 activityFinish = true;
                                 this.finish();
@@ -252,6 +290,11 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                                 long hour = (countNumber / (1000 * 60 * 60)) % 24;
                                 intent.putExtra("SetTime", String.format("%02d:%02d:%02d:%d", hour, minute, second, countNumber % 1000));
                                 startActivity(intent);
+                                if (countUpDownFlag) {
+                                    countDown.cancel();
+                                } else {
+                                    countUp.cancel();
+                                }
                                 onStop();
                                 activityFinish = true;
                                 this.finish();
@@ -281,12 +324,12 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     public void onUserLeaveHint() {
         //座禅強制終了
         if (!activityFinish) {
+            countDown.cancel();
+            onStop();
             new AlertDialog.Builder(this)
                     .setCancelable(false)
                     .setMessage("座禅が中断されました")
                     .setPositiveButton("閉じる", (dialog, which) -> {
-                        countDown.cancel();
-                        onStop();
                         activityStart = false;
                         this.finish();
                     })
@@ -465,6 +508,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             //タイマー終了
             activityStart = false;
             activityFinish = true;
+            soundPool.play(se3, 1f, 1f, 0, -1, 1f);
             startScreen.setVisibility(View.GONE);
             tapScreen.setVisibility(View.GONE);
             poseScreen.setVisibility(View.GONE);
@@ -481,7 +525,14 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             long milli = countNumber % 1000 / 10;
             long second = (countNumber / 1000) % 60;
             long minute = (countNumber / (1000 * 60)) % 60;
-            timerText.setText(String.format("%02d:%02d.%02d",  minute, second, milli));
+            if (second != oldSec) {
+                oldSec = second;
+                if (oldSec % 10 == 0) {
+                    soundPool.play(se2, 1f, 1f, 0, 0, 1f);
+                }
+                soundPool.play(se1, 1f, 1f, 0, 0, 1f);
+            }
+            timerText.setText(String.format("%02d:%02d.%02d", minute, second, milli));
         }
     }
 
@@ -499,6 +550,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             //タイマー終了
             activityStart = false;
             activityFinish = true;
+            soundPool.play(se3, 1f, 1f, 0, -1, 1f);
             startScreen.setVisibility(View.GONE);
             tapScreen.setVisibility(View.GONE);
             poseScreen.setVisibility(View.GONE);
@@ -517,7 +569,14 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             long milli = countNumber % 1000 / 10;
             long second = (countNumber / 1000) % 60;
             long minute = (countNumber / (1000 * 60)) % 60;
-            timerText.setText(String.format("%02d:%02d.%02d",  minute, second, milli));
+            if (second != oldSec) {
+                oldSec = second;
+                if (oldSec % 10 == 0) {
+                    soundPool.play(se2, 1f, 1f, 0, 0, 1f);
+                }
+                soundPool.play(se1, 1f, 1f, 0, 0, 1f);
+            }
+            timerText.setText(String.format("%02d:%02d.%02d", minute, second, milli));
         }
     }
 }

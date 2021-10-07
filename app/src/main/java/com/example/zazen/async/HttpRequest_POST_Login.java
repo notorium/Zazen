@@ -109,7 +109,7 @@ public class HttpRequest_POST_Login extends AsyncTask<String, Void, JSONObject> 
             }
         } catch (JSONException e) {
             System.out.println(e);
-            errorText.setText("ユーザIDまたはパスワードが違います。");
+//            errorText.setText("ユーザIDまたはパスワードが違います。");
             errorText.setTextColor(callerActivity.getResources().getColor(R.color.red));
             e.printStackTrace();
         }

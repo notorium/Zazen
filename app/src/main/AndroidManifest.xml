@@ -13,7 +13,9 @@
         android:theme="@style/Theme.Zazen"
         android:usesCleartextTraffic="true">
         <activity android:name=".activity.WebActivity"></activity>
-        <activity android:name=".activity.StartActivity">
+        <activity
+            android:name=".activity.StartActivity"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -23,8 +25,12 @@
         <activity
             android:name=".activity.MainActivity"
             android:screenOrientation="portrait" />
-        <activity android:name=".activity.ConfigActivity"></activity>
-        <activity android:name=".activity.ResultActivity" />
+        <activity
+            android:name=".activity.ConfigActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".activity.ResultActivity"
+            android:screenOrientation="portrait" />
     </application>
 
 </manifest>

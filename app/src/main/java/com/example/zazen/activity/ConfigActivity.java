@@ -125,12 +125,17 @@ public class ConfigActivity extends AppCompatActivity {
             modeNum = 0;
             editor.putInt("ModeNumber", modeNum).apply();
             mode1.setBackgroundColor(getResources().getColor(R.color.red));
-            mode2.setBackgroundColor(getResources().getColor(R.color.purple_500));
+//            mode2.setBackgroundColor(getResources().getColor(R.color.purple_500));
             mode3.setBackgroundColor(getResources().getColor(R.color.purple_500));
+
 
             setTime.setProgress(0);
             setGyro.setChecked(true);
             setDevice.check(R.id.radioButton1);
+
+            setTime.setEnabled(false);
+            setGyro.setEnabled(false);
+            Dset1.setEnabled(false);
             Dset2.setEnabled(false);
 //            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
 //                setTime.setThumbTintList(ColorStateList.valueOf(getResources().getColor(R.color.red)));
@@ -158,9 +163,12 @@ public class ConfigActivity extends AppCompatActivity {
             modeNum = 2;
             editor.putInt("ModeNumber", modeNum).apply();
             mode1.setBackgroundColor(getResources().getColor(R.color.purple_500));
-            mode2.setBackgroundColor(getResources().getColor(R.color.purple_500));
+//            mode2.setBackgroundColor(getResources().getColor(R.color.purple_500));
             mode3.setBackgroundColor(getResources().getColor(R.color.red));
 
+            setTime.setEnabled(true);
+            setGyro.setEnabled(true);
+            Dset1.setEnabled(true);
 //            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
 //                setTime.setThumbTintList(ColorStateList.valueOf(getResources().getColor(R.color.teal_200)));
 //            }
