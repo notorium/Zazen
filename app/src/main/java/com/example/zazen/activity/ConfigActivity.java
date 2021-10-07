@@ -122,21 +122,28 @@ public class ConfigActivity extends AppCompatActivity {
         );
 
         mode1.setOnClickListener(v -> {
-            modeNum = 0;
-            editor.putInt("ModeNumber", modeNum).apply();
-            mode1.setBackgroundColor(getResources().getColor(R.color.red));
+            new AlertDialog.Builder(this)
+                    .setTitle("開始前確認")
+                    .setCancelable(false)
+                    .setMessage("チュートリアルを開始しますか？\n" +
+                            "※設定値は固定となります。" +
+                            "\n時間：3分\nジャイロ：あり\n端末設置場所：手の上")
+                    .setPositiveButton("はい", (dialog, which) -> {
+                        modeNum = 0;
+                        editor.putInt("ModeNumber", modeNum).apply();
+                        mode1.setBackgroundColor(getResources().getColor(R.color.red));
 //            mode2.setBackgroundColor(getResources().getColor(R.color.purple_500));
-            mode3.setBackgroundColor(getResources().getColor(R.color.purple_500));
+                        mode3.setBackgroundColor(getResources().getColor(R.color.purple_500));
 
 
-            setTime.setProgress(0);
-            setGyro.setChecked(true);
-            setDevice.check(R.id.radioButton1);
+                        setTime.setProgress(0);
+                        setGyro.setChecked(true);
+                        setDevice.check(R.id.radioButton1);
 
-            setTime.setEnabled(false);
-            setGyro.setEnabled(false);
-            Dset1.setEnabled(false);
-            Dset2.setEnabled(false);
+                        setTime.setEnabled(false);
+                        setGyro.setEnabled(false);
+                        Dset1.setEnabled(false);
+                        Dset2.setEnabled(false);
 //            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
 //                setTime.setThumbTintList(ColorStateList.valueOf(getResources().getColor(R.color.red)));
 //            }
@@ -147,8 +154,14 @@ public class ConfigActivity extends AppCompatActivity {
 //            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
 //                Dset1.setButtonTintList(ColorStateList.valueOf(getResources().getColor(R.color.red)));
 //            }
-            editor.putInt("SeekValue", setTime.getProgress()).apply();
-            editor.putBoolean("GyroChecked", true).apply();
+                        editor.putInt("SeekValue", setTime.getProgress()).apply();
+                        editor.putBoolean("GyroChecked", true).apply();
+                        Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                        startActivity(intent);
+                        this.finish();
+                    })
+                    .setNegativeButton("いいえ", null)
+                    .show();
         });
 
         mode2.setOnClickListener(v -> {
@@ -184,7 +197,54 @@ public class ConfigActivity extends AppCompatActivity {
 //            }
         });
     }
-
+public void help(View v){
+    switch (getResources().getResourceEntryName(v.getId())) {
+        case "help1":
+            new AlertDialog.Builder(this)
+                    .setCancelable(false)
+                    .setTitle("モード")
+                    .setMessage("モードの選択をします。\n" +
+                            "練習モード：\n　呼吸の練習をするモードです。\n" +
+                            "　時間：3分　ジャイロ：あり\n" +
+                            "　設定値は固定です。\n" +
+                            "フリーモード：\n　設定値をカスタムできるモードです。\n" +
+                            "　設定値を自由に設定できます。\n")
+                    .setPositiveButton("閉じる", null)
+                    .show();
+            break;
+        case "help2":
+            new AlertDialog.Builder(this)
+                    .setCancelable(false)
+                    .setTitle("時間")
+                    .setMessage("座禅を行う時間を設定します。\n" +
+                            "時間指定ありの場合：\n　・設定時間分の記録を行います。\n" +
+                            "　・中断すると記録が残りません。\n" +
+                            "時間指定なしの場合：\n　・記録できる時間の上限は60分です。\n"+
+                            "　・開始から1分未満で中断すると記録が残りません。\n" +
+                            "　・開始から1分以上から中断しても記録が残るようになります。")
+                    .setPositiveButton("閉じる", null)
+                    .show();
+            break;
+        case "help3":
+            new AlertDialog.Builder(this)
+                    .setCancelable(false)
+                    .setTitle("ジャイロ")
+                    .setMessage("ジャイロの計測を行うかを設定します。" +
+                            "\n・計測をONにする場合は、端末の設置場所は手の上固定となります。")
+                    .setPositiveButton("閉じる", null)
+                    .show();
+            break;
+        case "help4":
+            new AlertDialog.Builder(this)
+                    .setCancelable(false)
+                    .setTitle("端末の設置場所")
+                    .setMessage("座禅をする際の端末の設置場所を設定します。\n" +
+                            "・ジャイロ計測ONの場合は手の上固定となります。")
+                    .setPositiveButton("閉じる", null)
+                    .show();
+            break;
+    }
+}
     public void start(View v) {
         //開始前確認メッセージ
         new AlertDialog.Builder(this)

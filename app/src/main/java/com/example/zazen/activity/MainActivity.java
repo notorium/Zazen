@@ -213,15 +213,16 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
         countDownHandler.postDelayed(() -> {
             countdownText.setText("");
-
-            if (countUpDownFlag) {
-                countDown.start();
-            } else {
-                countUp.start();
+            if (!activityFinish) {
+                if (countUpDownFlag) {
+                    countDown.start();
+                } else {
+                    countUp.start();
+                }
+                tapScreen.setEnabled(true);
+                activityStart = true;
             }
 
-            tapScreen.setEnabled(true);
-            activityStart = true;
         }, 5000);
     }
 
@@ -324,13 +325,18 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     public void onUserLeaveHint() {
         //座禅強制終了
         if (!activityFinish) {
-            countDown.cancel();
+            if (countUpDownFlag) {
+                countDown.cancel();
+            } else {
+                countUp.cancel();
+            }
+            activityStart = false;
+            activityFinish = true;
             onStop();
             new AlertDialog.Builder(this)
                     .setCancelable(false)
                     .setMessage("座禅が中断されました")
                     .setPositiveButton("閉じる", (dialog, which) -> {
-                        activityStart = false;
                         this.finish();
                     })
                     .show();
