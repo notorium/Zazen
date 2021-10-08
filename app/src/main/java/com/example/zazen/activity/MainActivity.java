@@ -6,13 +6,11 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.media.AudioAttributes;
 import android.media.AudioManager;
-import android.media.MediaPlayer;
 import android.media.SoundPool;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Handler;
-import android.provider.MediaStore;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -24,6 +22,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.example.zazen.R;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -55,6 +54,12 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     //記録データ
     static StringBuilder accelerationData;
     static StringBuilder rotationData;
+    float x1 = 0, y1 = 0;
+    List<Float> avglist = new ArrayList<>();
+    List<Long> timelist = new ArrayList<>();
+    List<Float> rotx = new ArrayList<>();
+    List<Float> roty = new ArrayList<>();
+    int datacnt = 0;
 
     //タイマー変数
     private CountDown countDown;
@@ -317,6 +322,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         long minute = (firstTime / (1000 * 60)) % 60;
         long hour = (firstTime / (1000 * 60 * 60)) % 24;
         intent.putExtra("SetTime", String.format("%02d:%02d:%02d:%d", hour, minute, second, firstTime % 1000));
+        soundPool.stop(se3);
         startActivity(intent);
         this.finish();
     }
@@ -424,7 +430,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 //            dy = event.values[1] - old_y;
 //            dz = event.values[2] - old_z;
             vectorSize = Math.sqrt(dx * dx + dy * dy + dz * dz);
-            counter++;
+
 
             // 一回目はノイズになるから省く
             if (noiseflg) {
@@ -478,6 +484,21 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 SimpleDateFormat DF = new SimpleDateFormat("HH:mm:ss.SSS", Locale.JAPAN);
                 String date = DF.format(new Date());
                 rotationData.append(date + "," + vx + "," + vy + "," + vz + "\\n");
+                counter++;
+                rotx.add(vx);
+                roty.add(vy);
+                x1 += vx;
+                y1 += vy;
+                float avgx = x1 / 50;
+                float avgy = y1 / 50;
+                if (counter >= 50) {
+                    avglist.add((float) Math.sqrt(avgx * avgx + avgy * avgy));
+                    timelist.add(countUpDownFlag ? firstTime - countNumber : countNumber);
+                    x1 -= rotx.get(0);
+                    y1 -= roty.get(0);
+                    rotx.remove(0);
+                    roty.remove(0);
+                }
             }
 //            x = vx;
 //            y = vy;
@@ -502,6 +523,10 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
     }
 
+    public void average() {
+
+    }
+
     //カウントダウンタイマー
     class CountDown extends CountDownTimer {
 
@@ -514,7 +539,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             //タイマー終了
             activityStart = false;
             activityFinish = true;
-            soundPool.play(se3, 1f, 1f, 0, -1, 1f);
+            soundPool.play(se3, 1f, 1f, 0, 5, 1f);
             startScreen.setVisibility(View.GONE);
             tapScreen.setVisibility(View.GONE);
             poseScreen.setVisibility(View.GONE);
@@ -556,7 +581,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             //タイマー終了
             activityStart = false;
             activityFinish = true;
-            soundPool.play(se3, 1f, 1f, 0, -1, 1f);
+            soundPool.play(se3, 1f, 1f, 0, 5, 1f);
             startScreen.setVisibility(View.GONE);
             tapScreen.setVisibility(View.GONE);
             poseScreen.setVisibility(View.GONE);
