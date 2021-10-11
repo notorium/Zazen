@@ -4,6 +4,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -13,6 +14,8 @@ import android.widget.SeekBar;
 import com.example.zazen.R;
 import com.example.zazen.async.HttpRequest_POST_Data;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
@@ -93,7 +96,7 @@ public class ResultActivity extends AppCompatActivity {
                                 "\",\"flg\":\"" + (gyroFlg ? "1" : "0") +
                                 "\",\"accelerationdata\":\"" + accelerationData +
                                 "\",\"rotationdata\":\"" + rotationData +
-                                "\",\"weather_id\":\"" + "1" +
+                                "\",\"weather_id\":\"" + "0" +
                                 "\"}";
                         HttpRequest_POST_Data httpRequestPost = new HttpRequest_POST_Data(this, postStr);
                         httpRequestPost.execute("http://fukuiohr2.sakura.ne.jp/2021/Zazen/postdata.php");
@@ -115,6 +118,18 @@ public class ResultActivity extends AppCompatActivity {
         startActivity(shareIntent);
     }
 
+    public void tweet(View view) {
+        String strTweet = "";
+        String strMessage = "";
+        try {
+            strTweet = "http://twitter.com/intent/tweet?text="
+                    + URLEncoder.encode(strMessage, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(strTweet));
+        startActivity(intent);
+    }
     public void onBackPressed() {
         backHome();
     }

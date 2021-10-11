@@ -539,7 +539,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             //タイマー終了
             activityStart = false;
             activityFinish = true;
-            soundPool.play(se3, 1f, 1f, 0, 5, 1f);
+            soundPool.play(se3, 1f, 1f, 0, 3, 1f);
             startScreen.setVisibility(View.GONE);
             tapScreen.setVisibility(View.GONE);
             poseScreen.setVisibility(View.GONE);
@@ -556,7 +556,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             long milli = countNumber % 1000 / 10;
             long second = (countNumber / 1000) % 60;
             long minute = (countNumber / (1000 * 60)) % 60;
-            if (second != oldSec) {
+            if (second != oldSec && ConfigActivity.config_value.getInt("ModeNumber", 2) == 0) {
                 oldSec = second;
                 if (oldSec % 10 == 0) {
                     soundPool.play(se2, 1f, 1f, 0, 0, 1f);
@@ -581,11 +581,11 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             //タイマー終了
             activityStart = false;
             activityFinish = true;
-            soundPool.play(se3, 1f, 1f, 0, 5, 1f);
+            soundPool.play(se3, 1f, 1f, 0, 3, 1f);
             startScreen.setVisibility(View.GONE);
             tapScreen.setVisibility(View.GONE);
             poseScreen.setVisibility(View.GONE);
-            timerText.setText(dataFormat.format(0));
+            timerText.setText(dataFormat.format(firstTime));
             countdownText.setText("終了!!");
             resultButton.setVisibility(View.VISIBLE);
         }
@@ -600,13 +600,13 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             long milli = countNumber % 1000 / 10;
             long second = (countNumber / 1000) % 60;
             long minute = (countNumber / (1000 * 60)) % 60;
-            if (second != oldSec) {
-                oldSec = second;
-                if (oldSec % 10 == 0) {
-                    soundPool.play(se2, 1f, 1f, 0, 0, 1f);
-                }
-                soundPool.play(se1, 1f, 1f, 0, 0, 1f);
-            }
+//            if (second != oldSec) {
+//                oldSec = second;
+//                if (oldSec % 10 == 0) {
+//                    soundPool.play(se2, 1f, 1f, 0, 0, 1f);
+//                }
+//                soundPool.play(se1, 1f, 1f, 0, 0, 1f);
+//            }
             timerText.setText(String.format("%02d:%02d.%02d", minute, second, milli));
         }
     }

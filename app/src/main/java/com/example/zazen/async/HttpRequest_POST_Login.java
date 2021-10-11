@@ -117,8 +117,8 @@ public class HttpRequest_POST_Login extends AsyncTask<String, Void, JSONObject> 
         if (loginStatus.getBoolean("LoginFlg", false)) {
             errorText.setText("ログインしました");
             errorText.setTextColor(callerActivity.getResources().getColor(R.color.green));
-            useridInput.setText("");
-            passwordInput.setText("");
+//            useridInput.setText("");
+//            passwordInput.setText("");
             useridInput.setEnabled(false);
             passwordInput.setEnabled(false);
         } else {

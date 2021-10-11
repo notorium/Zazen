@@ -57,8 +57,7 @@
             android:id="@+id/modeButton2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:enabled="false"
-            android:text="Mode2"
+            android:text="瞑想"
             app:layout_constraintEnd_toStartOf="@+id/modeButton3"
             app:layout_constraintStart_toEndOf="@+id/modeButton1"
             app:layout_constraintTop_toTopOf="parent" />

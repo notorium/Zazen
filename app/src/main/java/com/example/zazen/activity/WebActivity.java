@@ -32,7 +32,7 @@ public class WebActivity extends AppCompatActivity {
         getWindow().setFlags(
                 WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED,
                 WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED);
-        webView.loadUrl("http://fukuiohr2.sakura.ne.jp/2021/Zazen/zazen_web/index.php");
+        webView.loadUrl("http://fukuiohr2.sakura.ne.jp/2021/Zazen/zazen_web_designtemplate/index.php");
     }
 
 //    @Override

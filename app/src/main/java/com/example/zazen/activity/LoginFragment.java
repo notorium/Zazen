@@ -59,16 +59,18 @@ public class LoginFragment extends Fragment {
 //        return fragment;
 //    }
 
-    static TextView errorText;
+    static TextView errorText, signupText;
     static EditText useridInput, passwordInput;
     static View loginScreen;
     static Button loginButton;
+
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         loginScreen = getActivity().findViewById(R.id.loginScreen);
         loginButton = getActivity().findViewById(R.id.loginButton);
         errorText = getActivity().findViewById(R.id.errorText);
+        signupText = getActivity().findViewById(R.id.signupTextView);
         useridInput = getActivity().findViewById(R.id.userid_editText);
         passwordInput = getActivity().findViewById(R.id.password_editText);
 
@@ -77,7 +79,10 @@ public class LoginFragment extends Fragment {
             useridInput.clearFocus();
             passwordInput.clearFocus();
         });
-
+        signupText.setOnClickListener(v -> {
+            Intent intent = new Intent(this.getActivity(), WebActivity.class);
+            startActivity(intent);
+        });
     }
 
     @Override
