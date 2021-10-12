@@ -103,7 +103,9 @@ public class ResultActivity extends AppCompatActivity {
 //        HttpRequest_GET_Img httpRequestGetImg = new HttpRequest_GET_Img(this, "test_");
 //        httpRequestGetImg.execute("http://fukuiohr2.sakura.ne.jp/2021/Zazen/postdata.php");
                     })
-                    .setNegativeButton("いいえ", null)
+                    .setNegativeButton("いいえ", (dialog, which) -> {
+                        v.setEnabled(true);
+                    })
                     .show();
         } else {
             loginScreen.setVisibility(View.VISIBLE);
@@ -130,6 +132,7 @@ public class ResultActivity extends AppCompatActivity {
         Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(strTweet));
         startActivity(intent);
     }
+
     public void onBackPressed() {
         backHome();
     }

@@ -523,8 +523,28 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
     }
 
-    public void average() {
-
+    public int average() {
+        int kokyu = 0, upcnt = 0, downcnt = 0;
+        float min = 10, max = -10;
+        boolean f = false;
+        for (float i : avglist) {
+            if (min > i) {
+                min = i;
+                downcnt++;
+            } else if (max < i) {
+                downcnt = 0;
+                max = i;
+                min = 10;
+                upcnt++;
+                f = upcnt > 20;
+            }
+            if (downcnt > 50 && f) {
+                kokyu++;
+                max = -10;
+                upcnt = 0;
+            }
+        }
+        return kokyu;
     }
 
     //カウントダウンタイマー
