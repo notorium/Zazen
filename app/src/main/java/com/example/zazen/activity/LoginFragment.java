@@ -106,6 +106,6 @@ public class LoginFragment extends Fragment {
                 "\",\"pass\":\"" + passwordInput.getText().toString() +
                 "\"}";
         HttpRequest_POST_Login login = new HttpRequest_POST_Login(this.getActivity(), postStr);
-        login.execute("http://fukuiohr2.sakura.ne.jp/2021/Zazen/login.php");
+        login.execute("http://zazethcare.main.jp/Application/login.php");
     }
 }

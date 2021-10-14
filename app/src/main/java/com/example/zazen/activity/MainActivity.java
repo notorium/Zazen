@@ -54,6 +54,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     //記録データ
     static StringBuilder accelerationData;
     static StringBuilder rotationData;
+    Date startTime;
     float x1 = 0, y1 = 0;
     List<Float> avglist = new ArrayList<>();
     List<Long> timelist = new ArrayList<>();
@@ -171,6 +172,12 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                     .setPositiveButton("閉じる", null)
                     .show();
         }
+
+        if (countUpDownFlag) {
+            countDown = new CountDown(countNumber, 10);
+        } else {
+            countUp = new CountUp(countNumber, 10, firstTime);
+        }
     }
 
     //画面タップ後に座禅スタート
@@ -197,16 +204,11 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
     //タップから3秒後にスタート
     public void countDown() {
-        if (countUpDownFlag) {
-            countDown = new CountDown(countNumber, 10);
-        } else {
-            countUp = new CountUp(countNumber, 10, firstTime);
-        }
-
         startScreen.setVisibility(View.GONE);
         tapScreen.setEnabled(false);
         activityPose = false;
 
+        startTime = new Date();
         final Handler countDownHandler = new Handler();
         countDownHandler.postDelayed(() -> countdownText.setText("3"), 1000);
         countDownHandler.postDelayed(() -> countdownText.setText("2"), 2000);
@@ -225,9 +227,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                     countUp.start();
                 }
                 tapScreen.setEnabled(true);
-                activityStart = true;
             }
-
+            activityStart = true;
         }, 5000);
     }
 
@@ -291,10 +292,12 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                             .setMessage("座禅を終了しますか？")
                             .setPositiveButton("はい", (dialog, which) -> {
                                 Intent intent = new Intent(getApplicationContext(), ResultActivity.class);
+                                SimpleDateFormat DF = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.JAPAN);
                                 long second = (countNumber / 1000) % 60;
                                 long minute = (countNumber / (1000 * 60)) % 60;
                                 long hour = (countNumber / (1000 * 60 * 60)) % 24;
                                 intent.putExtra("SetTime", String.format("%02d:%02d:%02d:%d", hour, minute, second, countNumber % 1000));
+                                intent.putExtra("StartTime", DF.format(startTime));
                                 startActivity(intent);
                                 if (countUpDownFlag) {
                                     countDown.cancel();
@@ -318,10 +321,12 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     //結果画面へ遷移
     public void result(View v) {
         Intent intent = new Intent(getApplicationContext(), ResultActivity.class);
+        SimpleDateFormat DF = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.JAPAN);
         long second = (firstTime / 1000) % 60;
         long minute = (firstTime / (1000 * 60)) % 60;
         long hour = (firstTime / (1000 * 60 * 60)) % 24;
         intent.putExtra("SetTime", String.format("%02d:%02d:%02d:%d", hour, minute, second, firstTime % 1000));
+        intent.putExtra("StartTime", DF.format(startTime));
         soundPool.stop(se3);
         startActivity(intent);
         this.finish();
@@ -544,7 +549,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 upcnt = 0;
             }
         }
-        return kokyu;
+        return kokyu == 0 ? 0 : kokyu + 1;
     }
 
     //カウントダウンタイマー

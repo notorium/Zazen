@@ -30,9 +30,9 @@ public class ResultActivity extends AppCompatActivity {
     private View loginScreen;
     private Button resultButton;
 
-    private int selfAssessment;
+    private int selfAssessment = 1;
     private boolean loginOpenFlg = false;
-    private String[] modeStr = {"練習", "瞑想", "フリーカスタム"};
+    private String[] modeStr = {"練習", "瞑想", "フリー"};
 
     public static boolean postFlg = false;
 
@@ -85,10 +85,10 @@ public class ResultActivity extends AppCompatActivity {
                     .setTitle("送信前確認")
                     .setMessage("座禅の記録を送信しますか？")
                     .setPositiveButton("はい", (dialog, which) -> {
-                        SimpleDateFormat DF = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss", Locale.JAPAN);
-                        String date = DF.format(new Date());
+//                        SimpleDateFormat DF = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.JAPAN);
+//                        String date = DF.format(new Date());
                         String postStr = "{\"user_id\":\"" + StartActivity.loginStatus.getString("UserId", "") +
-                                "\",\"date\":\"" + date +
+                                "\",\"date\":\"" + getIntent().getStringExtra("StartTime") +
                                 "\",\"mode\":\"" + modeStr[ConfigActivity.config_value.getInt("ModeNumber", 2)] +
                                 "\",\"time\":\"" + getIntent().getStringExtra("SetTime") +
                                 "\",\"comment\":\"" + commentText.getText().toString() +
@@ -99,7 +99,7 @@ public class ResultActivity extends AppCompatActivity {
                                 "\",\"weather_id\":\"" + "0" +
                                 "\"}";
                         HttpRequest_POST_Data httpRequestPost = new HttpRequest_POST_Data(this, postStr);
-                        httpRequestPost.execute("http://fukuiohr2.sakura.ne.jp/2021/Zazen/postdata.php");
+                        httpRequestPost.execute("http://zazethcare.main.jp/Application/postdata.php");
 //        HttpRequest_GET_Img httpRequestGetImg = new HttpRequest_GET_Img(this, "test_");
 //        httpRequestGetImg.execute("http://fukuiohr2.sakura.ne.jp/2021/Zazen/postdata.php");
                     })
