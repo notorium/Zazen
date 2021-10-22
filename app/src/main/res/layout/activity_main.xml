@@ -7,7 +7,7 @@
     android:keepScreenOn="true">
 
     <include
-        layout="@layout/pose"
+        layout="@layout/screen_pose"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:visibility="gone"
@@ -17,7 +17,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <include
-        layout="@layout/start"
+        layout="@layout/screen_start"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:layout_constraintBottom_toBottomOf="parent"

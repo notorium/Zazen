@@ -33,7 +33,7 @@ public class ResultActivity extends AppCompatActivity {
     private int selfAssessment = 1;
     private boolean loginOpenFlg = false;
     private String[] modeStr = {"練習", "瞑想", "フリー"};
-
+    private String[] shareModeStr = {"腹式呼吸の練習", "瞑想", "座禅"};
     public static boolean postFlg = false;
 
     @Override
@@ -114,18 +114,28 @@ public class ResultActivity extends AppCompatActivity {
     }
 
     public void shareResult(View v) {
+        String text = StartActivity.loginStatus.getString("UserName", "ゲスト") + "さんは\n" +
+                getIntent().getStringExtra("StartTime") + "から" +
+                getIntent().getStringExtra("Minute") + "分間" +
+                shareModeStr[ConfigActivity.config_value.getInt("ModeNumber", 2)] +
+                "をしました！" +
+                "\n\nサイトの利用はこちらから→http://zazethcare.main.jp/index.php";
+
         Intent shareIntent = new Intent(Intent.ACTION_SEND);
-        shareIntent.setType("text/plain");
-        shareIntent.putExtra(Intent.EXTRA_TEXT, "");
+        shareIntent.setType("text/plain")
+                .putExtra(Intent.EXTRA_TEXT, text);
         startActivity(shareIntent);
     }
 
     public void tweet(View view) {
         String strTweet = "";
+        String strHashTag = "#ZAZETHCARE";
         String strMessage = "";
         try {
             strTweet = "http://twitter.com/intent/tweet?text="
-                    + URLEncoder.encode(strMessage, "UTF-8");
+                    + URLEncoder.encode(strMessage, "UTF-8")
+                    + "+"
+                    + URLEncoder.encode(strHashTag, "UTF-8");
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }

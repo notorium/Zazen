@@ -267,7 +267,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
             case "finish":
                 //座禅中断
-                if (countUpDownFlag || countNumber < 6000) {
+                if (countUpDownFlag || countNumber < 60000) {
                     new AlertDialog.Builder(this)
                             .setCancelable(false)
                             .setMessage("座禅を中断しますか？\n※記録は残りません")
@@ -296,8 +296,10 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                                 long second = (countNumber / 1000) % 60;
                                 long minute = (countNumber / (1000 * 60)) % 60;
                                 long hour = (countNumber / (1000 * 60 * 60)) % 24;
-                                intent.putExtra("SetTime", String.format("%02d:%02d:%02d:%d", hour, minute, second, countNumber % 1000));
+                                intent.putExtra("SetTime", String.format("%02d:%02d:%02d.%d", hour, minute, second, countNumber % 1000));
                                 intent.putExtra("StartTime", DF.format(startTime));
+                                intent.putExtra("Minute", (second == 0 ? "" : "約") + (hour * 60 + minute));
+                                intent.putExtra("Breath", average());
                                 startActivity(intent);
                                 if (countUpDownFlag) {
                                     countDown.cancel();
@@ -325,8 +327,10 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         long second = (firstTime / 1000) % 60;
         long minute = (firstTime / (1000 * 60)) % 60;
         long hour = (firstTime / (1000 * 60 * 60)) % 24;
-        intent.putExtra("SetTime", String.format("%02d:%02d:%02d:%d", hour, minute, second, firstTime % 1000));
+        intent.putExtra("SetTime", String.format("%02d:%02d:%02d.%d", hour, minute, second, firstTime % 1000));
         intent.putExtra("StartTime", DF.format(startTime));
+        intent.putExtra("Minute", Long.toString(hour * 60 + minute));
+        intent.putExtra("Breath", average());
         soundPool.stop(se3);
         startActivity(intent);
         this.finish();
@@ -619,7 +623,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         @Override
         public void onTick(long millisUntilFinished) {
             countNumber = firstTime - millisUntilFinished;
-            if (countNumber == firstTime) {
+            if (countNumber >= firstTime) {
                 onFinish();
             }
             long milli = countNumber % 1000 / 10;
