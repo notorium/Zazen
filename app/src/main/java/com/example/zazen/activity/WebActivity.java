@@ -27,7 +27,6 @@ public class WebActivity extends AppCompatActivity {
 
         webView = findViewById(R.id.webView);
         toolbar = findViewById(R.id.toolbar);
-        toolbar.setTitle("Webページ");
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);

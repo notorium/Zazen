@@ -299,7 +299,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                                 intent.putExtra("SetTime", String.format("%02d:%02d:%02d.%d", hour, minute, second, countNumber % 1000));
                                 intent.putExtra("StartTime", DF.format(startTime));
                                 intent.putExtra("Minute", (second == 0 ? "" : "約") + (hour * 60 + minute));
-                                intent.putExtra("Breath", average());
+                                intent.putExtra("Breath", Integer.toString(breath()));
                                 startActivity(intent);
                                 if (countUpDownFlag) {
                                     countDown.cancel();
@@ -330,10 +330,35 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         intent.putExtra("SetTime", String.format("%02d:%02d:%02d.%d", hour, minute, second, firstTime % 1000));
         intent.putExtra("StartTime", DF.format(startTime));
         intent.putExtra("Minute", Long.toString(hour * 60 + minute));
-        intent.putExtra("Breath", average());
+        intent.putExtra("Breath", Integer.toString(breath()));
         soundPool.stop(se3);
         startActivity(intent);
         this.finish();
+    }
+
+    public int breath() {
+        int kokyu = 0, upcnt = 0, downcnt = 0;
+        float min = 10, max = -10;
+        boolean f = false;
+        for (float i : avglist) {
+            if (min > i) {
+                min = i;
+                downcnt++;
+            } else if (max < i) {
+                downcnt = 0;
+                max = i;
+                min = 10;
+                upcnt++;
+                f = upcnt > 20;
+            }
+            if (downcnt > 50 && f) {
+                kokyu++;
+                max = -10;
+                upcnt = 0;
+                f = false;
+            }
+        }
+        return kokyu == 0 ? 0 : kokyu + 1;
     }
 
     //ホームボタン、タスクボタンタップ検知
@@ -530,30 +555,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                     + "\n累計:" + String.format("%d", sum);*/
 
 
-    }
-
-    public int average() {
-        int kokyu = 0, upcnt = 0, downcnt = 0;
-        float min = 10, max = -10;
-        boolean f = false;
-        for (float i : avglist) {
-            if (min > i) {
-                min = i;
-                downcnt++;
-            } else if (max < i) {
-                downcnt = 0;
-                max = i;
-                min = 10;
-                upcnt++;
-                f = upcnt > 20;
-            }
-            if (downcnt > 50 && f) {
-                kokyu++;
-                max = -10;
-                upcnt = 0;
-            }
-        }
-        return kokyu == 0 ? 0 : kokyu + 1;
     }
 
     //カウントダウンタイマー

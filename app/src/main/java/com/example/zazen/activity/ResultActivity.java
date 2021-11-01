@@ -10,6 +10,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.SeekBar;
+import android.widget.TextView;
 
 import com.example.zazen.R;
 import com.example.zazen.async.HttpRequest_POST_Data;
@@ -29,6 +30,7 @@ public class ResultActivity extends AppCompatActivity {
     private SeekBar assessment_seekBar;
     private View loginScreen;
     private Button resultButton;
+    private TextView breathCount;
 
     private int selfAssessment = 1;
     private boolean loginOpenFlg = false;
@@ -45,6 +47,7 @@ public class ResultActivity extends AppCompatActivity {
         commentText = findViewById(R.id.editText);
         loginScreen = findViewById(R.id.loginScreen);
         resultButton = findViewById(R.id.postResultButton);
+        breathCount = findViewById(R.id.breathCount);
 
         accelerationData = gyroFlg ? MainActivity.accelerationData.toString() : "";
         rotationData = gyroFlg ? MainActivity.rotationData.toString() : "";
@@ -75,6 +78,7 @@ public class ResultActivity extends AppCompatActivity {
         );
 //        TextView view = findViewById(R.id.textView7);
 //        view.setText(timeData);
+        breathCount.setText(getIntent().getStringExtra("Breath") + "回");
     }
 
     public void postResult(View v) {
