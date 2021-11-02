@@ -147,6 +147,49 @@ public class ResultActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
+    public void help(View v) {
+        switch (getResources().getResourceEntryName(v.getId())) {
+            case "help1":
+                new AlertDialog.Builder(this)
+                        .setCancelable(false)
+                        .setTitle("感想")
+                        .setMessage("・座禅の感想を入力することができます。\n" +
+                                "・文字数の入力制限は140字以内となります。\n")
+                        .setPositiveButton("閉じる", null)
+                        .show();
+                break;
+            case "help2":
+                new AlertDialog.Builder(this)
+                        .setCancelable(false)
+                        .setTitle("自己評価")
+                        .setMessage("・座禅の出来を5段階で自己評価します。\n" +
+                                "・数字が大きいほど評価が高くなります。")
+                        .setPositiveButton("閉じる", null)
+                        .show();
+                break;
+            case "help3":
+                new AlertDialog.Builder(this)
+                        .setCancelable(false)
+                        .setTitle("結果を共有")
+                        .setMessage("・座禅の記録を任意のSNSにシェアすることができます。" +
+                                "\n・共有される内容は、ユーザ名と記録時間です。")
+                        .setPositiveButton("閉じる", null)
+                        .show();
+                break;
+            case "help4":
+                new AlertDialog.Builder(this)
+                        .setCancelable(false)
+                        .setTitle("データ送信")
+                        .setMessage("・直前に行った座禅の記録をデータベースに送信します。\n" +
+                                "・送信すると、Webページにて記録の詳細が確認できます。\n" +
+                                "・記録を送信するにはログインが必須です。\n" +
+                                "・ログインをしていない場合はここからログインすることができます。")
+                        .setPositiveButton("閉じる", null)
+                        .show();
+                break;
+        }
+    }
+
     public void onBackPressed() {
         backHome();
     }
