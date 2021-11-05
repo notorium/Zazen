@@ -41,9 +41,9 @@
         android:layout_marginLeft="10dp"
         android:layout_marginEnd="10dp"
         android:layout_marginRight="10dp"
-        app:layout_constraintEnd_toEndOf="@+id/textView2"
-        app:layout_constraintStart_toStartOf="@+id/textView2"
-        app:layout_constraintTop_toBottomOf="@+id/textView2">
+        app:layout_constraintEnd_toEndOf="@+id/attentionText"
+        app:layout_constraintStart_toStartOf="@+id/attentionText"
+        app:layout_constraintTop_toBottomOf="@+id/attentionText">
 
         <Button
             android:id="@+id/modeButton1"
@@ -154,7 +154,7 @@
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <TextView
-        android:id="@+id/textView2"
+        android:id="@+id/attentionText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="10dp"
@@ -246,8 +246,8 @@
         android:background="#FFFFFF"
         android:tint="#646464"
         android:onClick="help"
-        app:layout_constraintStart_toEndOf="@+id/textView2"
-        app:layout_constraintTop_toTopOf="@+id/textView2"
+        app:layout_constraintStart_toEndOf="@+id/attentionText"
+        app:layout_constraintTop_toTopOf="@+id/attentionText"
         app:srcCompat="@drawable/ic_help_outline_black_18dp"
         tools:ignore="VectorDrawableCompat" />
 

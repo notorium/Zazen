@@ -16,19 +16,20 @@
         android:text="タップしてスタート"
         android:textColor="@color/white"
         android:textSize="20sp"
+        android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/textView2"
+        android:id="@+id/attentionText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="お腹の膨らみ具合で記録をします。\n端末を手に乗せてお腹に付けてください。"
         android:textColor="@color/white"
         android:textSize="19sp"
-        android:textStyle="bold"
+        android:gravity="center"
         app:layout_constraintBottom_toTopOf="@+id/textView"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

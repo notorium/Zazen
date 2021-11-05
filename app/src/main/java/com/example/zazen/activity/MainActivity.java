@@ -30,7 +30,7 @@ import java.util.Locale;
 public class MainActivity extends AppCompatActivity implements SensorEventListener {
 
     //View変数
-    private TextView timerText, countdownText;
+    private TextView timerText, countdownText, attentionText;
     private Button resultButton;
     private View startScreen, poseScreen, tapScreen, mode1Dialog;
 
@@ -129,6 +129,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
         timerText = findViewById(R.id.timerText);
         countdownText = findViewById(R.id.countdownText);
+        attentionText = findViewById(R.id.attentionText);
 
         resultButton = findViewById(R.id.resultButton);
 
@@ -158,6 +159,9 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         accelerationData = new StringBuilder("");
         rotationData = new StringBuilder("");
 
+        if(!ConfigActivity.config_value.getBoolean("GyroChecked", false)){
+            attentionText.setVisibility(View.INVISIBLE);
+        }
         //countNumber = countNumberList[ConfigActivity.config_value.getInt("SeekValue", 0)];
         timerText.setText(dataFormat.format(countNumber));
         countdownText.setText("");
@@ -351,7 +355,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 upcnt++;
                 f = upcnt > 20;
             }
-            if (downcnt > 50 && f) {
+            if (downcnt > 60 && f) {
                 kokyu++;
                 max = -10;
                 upcnt = 0;
@@ -425,23 +429,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         float[] vector;
         float[] gyro;
 
-        /*case Sensor.TYPE_ROTATION_VECTOR:
-                vector = event.values.clone();
-                int vx = (int) Math.abs(Math.floor(vector[0] / 7 * 500));
-                int vy = (int) Math.abs(Math.floor(vector[1] / 7 * 500));
-                int vz = (int) Math.abs(Math.floor(vector[2] * 100));
-                sum += Math.abs(vx - x) > 0 ? 1 : 0;
-                sum += Math.abs(vy - y) > 0 ? 1 : 0;
-                //sum += Math.abs(vz - z) > 0 ? 1 : 0;
-                x = vx;
-                y = vy;
-                z = vz;
-                String str = "ジャイロセンサー値:"
-                        + "\nX軸中心:" + String.format("%3d", vx)
-                        + "\nY軸中心:" + String.format("%3d", vy)
-                        + "\nZ軸中心:" + String.format("%3d", vz)
-                        + "\n累計:" + String.format("%d", sum);
-                values.setText(str);*/
         if (event.sensor.getType() == android.hardware.Sensor.TYPE_ACCELEROMETER) {
             gyro = event.values.clone();
             // 取得 Acquiring data
@@ -483,16 +470,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
                 //datalist.add(date + "," + fdx + "," + fdy + "," + fdz + "," + fvector + "\n");
                 //datalist.add(date + "," + dx + "," + dy + "," + dz + "," + vectorSize + "\n");
-                if (true/*fvector > 100 && dz <0.0f */) {
+
                     if (counted) {
-
-                        /*String str = "ジャイロセンサー値:"
-                                + "\nX軸中心:" + String.format("%d", fdx)
-                                + "\nY軸中心:" + String.format("%d", fdy)
-                                + "\nZ軸中心:" + String.format("%d", fdz)
-                                + "\n累計:" + String.format("%d", fvector);
-                        values.setText(str);*/
-
                         counted = false;
                         // System.out.println("count is "+counter);
                         // 最大値なら格納
@@ -502,8 +481,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                     } else {
                         counted = true;
                     }
-
-                }
             }
                 /*System.out.println("x:" + Math.abs(Math.floor(gyro[0] * 10000)));
                 System.out.println("y:" + Math.abs(Math.floor(gyro[1] * 10000)));
@@ -523,9 +500,9 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 roty.add(vy);
                 x1 += vx;
                 y1 += vy;
-                float avgx = x1 / 50;
-                float avgy = y1 / 50;
-                if (counter >= 50) {
+                float avgx = x1 / 80;
+                float avgy = y1 / 80;
+                if (counter >= 80) {
                     avglist.add((float) Math.sqrt(avgx * avgx + avgy * avgy));
                     timelist.add(countUpDownFlag ? firstTime - countNumber : countNumber);
                     x1 -= rotx.get(0);
@@ -534,27 +511,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                     roty.remove(0);
                 }
             }
-//            x = vx;
-//            y = vy;
-//            z = vz;
-//            String str = "ジャイロセンサー値:"
-//                    + "\nX軸中心:" + String.format("%f", vector[0] * 180 * Math.PI)
-//                    + "\nY軸中心:" + String.format("%f", vector[1] * 180 * Math.PI)
-//                    + "\nZ軸中心:" + String.format("%f", vector[2] * 180 * Math.PI);
         }
-
-
-        //if (event.sensor.getType() == Sensor.TYPE_ROTATION_VECTOR) {
-
-
-        //} else if (event.sensor.getType() == Sensor.TYPE_GYROSCOPE) {
-            /*str += "\nジャイロセンサー値:"
-                    + "\nX軸中心:" + String.format("%3d", event.values[0])
-                    + "\nY軸中心:" + String.format("%3d", event.values[1])
-                    + "\nZ軸中心:" + String.format("%3d", event.values[2])
-                    + "\n累計:" + String.format("%d", sum);*/
-
-
     }
 
     //カウントダウンタイマー
