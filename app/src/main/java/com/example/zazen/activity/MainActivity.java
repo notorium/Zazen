@@ -353,9 +353,9 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 max = i;
                 min = 10;
                 upcnt++;
-                f = upcnt > 20;
+                f = upcnt > 10;
             }
-            if (downcnt > 60 && f) {
+            if (downcnt > 20 && f) {
                 kokyu++;
                 max = -10;
                 upcnt = 0;
@@ -500,9 +500,9 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 roty.add(vy);
                 x1 += vx;
                 y1 += vy;
-                float avgx = x1 / 80;
-                float avgy = y1 / 80;
-                if (counter >= 80) {
+                float avgx = x1 / 150;
+                float avgy = y1 / 150;
+                if (counter >= 150) {
                     avglist.add((float) Math.sqrt(avgx * avgx + avgy * avgy));
                     timelist.add(countUpDownFlag ? firstTime - countNumber : countNumber);
                     x1 -= rotx.get(0);

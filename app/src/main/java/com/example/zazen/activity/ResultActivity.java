@@ -170,13 +170,23 @@ public class ResultActivity extends AppCompatActivity {
             case "help3":
                 new AlertDialog.Builder(this)
                         .setCancelable(false)
+                        .setTitle("呼吸の回数")
+                        .setMessage("・ジャイロ計測ありの場合に、簡易的に検知できた呼吸の回数を表示します。" +
+                                "\n・表示される呼吸の回数は完全でない場合があります。"+
+                                "\n・ノイズなどが含まれた場合、回数が大幅にずれることがあります。")
+                        .setPositiveButton("閉じる", null)
+                        .show();
+                break;
+            case "help4":
+                new AlertDialog.Builder(this)
+                        .setCancelable(false)
                         .setTitle("結果を共有")
                         .setMessage("・座禅の記録を任意のSNSにシェアすることができます。" +
                                 "\n・共有される内容は、ユーザ名と記録時間です。")
                         .setPositiveButton("閉じる", null)
                         .show();
                 break;
-            case "help4":
+            case "help5":
                 new AlertDialog.Builder(this)
                         .setCancelable(false)
                         .setTitle("データ送信")

@@ -266,7 +266,7 @@
         tools:ignore="VectorDrawableCompat" />
 
     <ImageButton
-        android:id="@+id/help3"
+        android:id="@+id/help4"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="10dp"
@@ -280,7 +280,7 @@
         tools:ignore="VectorDrawableCompat" />
 
     <ImageButton
-        android:id="@+id/help4"
+        android:id="@+id/help5"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="10dp"
