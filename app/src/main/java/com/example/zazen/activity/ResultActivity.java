@@ -98,7 +98,6 @@ public class ResultActivity extends AppCompatActivity {
                                 "\",\"comment\":\"" + commentText.getText().toString() +
                                 "\",\"selfassessment\":\"" + selfAssessment +
                                 "\",\"flg\":\"" + (gyroFlg ? "1" : "0") +
-                                "\",\"accelerationdata\":\"" + accelerationData +
                                 "\",\"rotationdata\":\"" + rotationData +
                                 "\",\"weather_id\":\"" + "0" +
                                 "\"}";
