@@ -102,7 +102,7 @@ public class ResultActivity extends AppCompatActivity {
                                 "\",\"weather_id\":\"" + "0" +
                                 "\"}";
                         HttpRequest_POST_Data httpRequestPost = new HttpRequest_POST_Data(this, postStr);
-                        httpRequestPost.execute("http://zazethcare.main.jp/Application/postdata.php");
+                        httpRequestPost.execute("http://zazethcare.cloud/Application/postdata.php");
 //        HttpRequest_GET_Img httpRequestGetImg = new HttpRequest_GET_Img(this, "test_");
 //        httpRequestGetImg.execute("http://fukuiohr2.sakura.ne.jp/2021/Zazen/postdata.php");
                     })
@@ -122,7 +122,7 @@ public class ResultActivity extends AppCompatActivity {
                 getIntent().getStringExtra("Minute") + "分間" +
                 shareModeStr[ConfigActivity.config_value.getInt("ModeNumber", 2)] +
                 "をしました！" +
-                "\n\nサイトの利用はこちらから→http://zazethcare.main.jp/index.php";
+                "\n\nサイトの利用はこちらから→http://zazethcare.cloud/index.php";
 
         Intent shareIntent = new Intent(Intent.ACTION_SEND);
         shareIntent.setType("text/plain")
