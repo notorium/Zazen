@@ -2,28 +2,38 @@ package com.example.zazen.activity;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.provider.Settings;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.SeekBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.zazen.R;
 import com.example.zazen.async.HttpRequest_POST_Data;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Locale;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class ResultActivity extends AppCompatActivity {
 
-    private String accelerationData, rotationData;
+    private String accelerationData, rotationData, locationData;
     boolean gyroFlg = ConfigActivity.config_value.getBoolean("GyroChecked", false);
 
     private EditText commentText;
@@ -37,6 +47,10 @@ public class ResultActivity extends AppCompatActivity {
     private String[] modeStr = {"練習", "瞑想", "フリー"};
     private String[] shareModeStr = {"腹式呼吸の練習", "瞑想", "座禅"};
     public static boolean postFlg = false;
+
+    private LocationManager locationManager;
+    private LocationListener locationListener;
+    private Timer timer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,6 +67,9 @@ public class ResultActivity extends AppCompatActivity {
         rotationData = gyroFlg ? MainActivity.rotationData.toString() : "";
 
         resultButton.setText(StartActivity.loginStatus.getBoolean("LoginFlg", false) ? "結果を送信" : "ログイン");
+
+        locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
+        locationListener = new GetLocation();
 
         assessment_seekBar.setOnSeekBarChangeListener(
                 new SeekBar.OnSeekBarChangeListener() {
@@ -76,12 +93,39 @@ public class ResultActivity extends AppCompatActivity {
                     }
                 }
         );
-//        TextView view = findViewById(R.id.textView7);
-//        view.setText(timeData);
         breathCount.setText(getIntent().getStringExtra("Breath") + "回");
     }
 
     public void postResult(View v) {
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            //権限が許可されてない場合には
+            System.out.println(ContextCompat.checkSelfPermission(this,
+                    Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED);
+            if (ContextCompat.checkSelfPermission(this,
+                    Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                //権限をリクエストする
+                ActivityCompat.requestPermissions(this,
+                        new String[]{Manifest.permission.ACCESS_COARSE_LOCATION},
+                        1000);
+
+            } else {
+                if (locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
+                    //requestLocationUpdates(プロバイダー,通知の最小時間間隔(ms),通知の最小距離間隔(m),リスナー);
+                    locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 1, 10, locationListener);
+                    //タイムアウトを作るため、タイマーに位置情報取得キャンセルをスケジュールする
+                    TimerTask tt = new TimerTask() {
+                        @Override
+                        public void run() {
+                            locationManager.removeUpdates(locationListener);
+                        }
+                    };
+                    timer = new Timer(true);
+                    timer.schedule(tt, (long) 5 * 1000);
+                }
+            }
+        }
+
         if (StartActivity.loginStatus.getBoolean("LoginFlg", false)) {
             v.setEnabled(false);
             new AlertDialog.Builder(this)
@@ -89,8 +133,6 @@ public class ResultActivity extends AppCompatActivity {
                     .setTitle("送信前確認")
                     .setMessage("座禅の記録を送信しますか？")
                     .setPositiveButton("はい", (dialog, which) -> {
-//                        SimpleDateFormat DF = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.JAPAN);
-//                        String date = DF.format(new Date());
                         String postStr = "{\"user_id\":\"" + StartActivity.loginStatus.getString("UserId", "") +
                                 "\",\"date\":\"" + getIntent().getStringExtra("StartTime") +
                                 "\",\"mode\":\"" + modeStr[ConfigActivity.config_value.getInt("ModeNumber", 2)] +
@@ -103,8 +145,6 @@ public class ResultActivity extends AppCompatActivity {
                                 "\"}";
                         HttpRequest_POST_Data httpRequestPost = new HttpRequest_POST_Data(this, postStr);
                         httpRequestPost.execute("https://zazethcare.cloud/Application/postdata.php");
-//        HttpRequest_GET_Img httpRequestGetImg = new HttpRequest_GET_Img(this, "test_");
-//        httpRequestGetImg.execute("http://fukuiohr2.sakura.ne.jp/2021/Zazen/postdata.php");
                     })
                     .setNegativeButton("いいえ", (dialog, which) -> {
                         v.setEnabled(true);
@@ -128,22 +168,6 @@ public class ResultActivity extends AppCompatActivity {
         shareIntent.setType("text/plain")
                 .putExtra(Intent.EXTRA_TEXT, text);
         startActivity(shareIntent);
-    }
-
-    public void tweet(View view) {
-        String strTweet = "";
-        String strHashTag = "#ZAZETHCARE";
-        String strMessage = "";
-        try {
-            strTweet = "http://twitter.com/intent/tweet?text="
-                    + URLEncoder.encode(strMessage, "UTF-8")
-                    + "+"
-                    + URLEncoder.encode(strHashTag, "UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }
-        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(strTweet));
-        startActivity(intent);
     }
 
     public void help(View v) {
@@ -171,7 +195,7 @@ public class ResultActivity extends AppCompatActivity {
                         .setCancelable(false)
                         .setTitle("呼吸の回数")
                         .setMessage("・ジャイロ計測ありの場合に、簡易的に検知できた呼吸の回数を表示します。" +
-                                "\n・表示される呼吸の回数は完全でない場合があります。"+
+                                "\n・表示される呼吸の回数は完全でない場合があります。" +
                                 "\n・ノイズなどが含まれた場合、回数が大幅にずれることがあります。")
                         .setPositiveButton("閉じる", null)
                         .show();
@@ -235,4 +259,70 @@ public class ResultActivity extends AppCompatActivity {
         }
     }
 
+//    private void locationStart() {
+//        // LocationManager インスタンス生成
+//        locationManager =
+//                (LocationManager) getSystemService(LOCATION_SERVICE);
+//
+//        if (locationManager != null && locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+//            Log.d("debug", "location manager Enabled");
+//        } else {
+//            // GPSを設定するように促す
+//            Intent settingsIntent =
+//                    new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+//            startActivity(settingsIntent);
+//            Log.d("debug", "not gpsEnable, startActivity");
+//        }
+//
+//        if (ContextCompat.checkSelfPermission(this,
+//                Manifest.permission.ACCESS_FINE_LOCATION) !=
+//                PackageManager.PERMISSION_GRANTED) {
+//            ActivityCompat.requestPermissions(this,
+//                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION,}, 1000);
+//
+//            Log.d("debug", "checkSelfPermission false");
+//            return;
+//        }
+//
+//        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,
+//                1000, 50, (LocationListener) this);
+//
+//    }
+
+    //権限のリクエスト結果が返ってくる
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        if (requestCode == 1000) {
+            if (grantResults[0] != PackageManager.PERMISSION_GRANTED) {
+                //権限が許可されなかった
+                System.out.println(grantResults[0]);
+                System.out.println(PackageManager.PERMISSION_GRANTED);
+                Toast.makeText(getApplicationContext(), "権限が許可されませんでした。\n位置情報なしで送信します。", android.widget.Toast.LENGTH_LONG).show();
+            }
+        }
+    }
+
+    class GetLocation implements LocationListener {
+        @Override
+        public void onLocationChanged(Location location) {
+            //位置情報を文字列に変換
+            locationData = location.getLatitude() + "," + location.getLongitude();
+            //位置情報が取得できたため、取得を停止する
+            locationManager.removeUpdates(this);
+            timer.cancel();
+            System.out.println(locationData);
+        }
+
+        @Override
+        public void onProviderDisabled(String provider) {
+        }
+
+        @Override
+        public void onProviderEnabled(String provider) {
+        }
+
+        @Override
+        public void onStatusChanged(String provider, int status, Bundle extras) {
+        }
+    }
 }
