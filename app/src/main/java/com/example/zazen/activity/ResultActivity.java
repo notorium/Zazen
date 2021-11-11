@@ -1,11 +1,13 @@
 package com.example.zazen.activity;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import android.Manifest;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
@@ -14,6 +16,7 @@ import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.provider.Settings;
 import android.util.Log;
 import android.view.View;
@@ -51,7 +54,8 @@ public class ResultActivity extends AppCompatActivity {
     private LocationManager locationManager;
     private LocationListener locationListener;
     private Timer timer;
-
+    private ProgressDialog locationProgress;
+    
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -108,21 +112,21 @@ public class ResultActivity extends AppCompatActivity {
                 ActivityCompat.requestPermissions(this,
                         new String[]{Manifest.permission.ACCESS_COARSE_LOCATION},
                         1000);
+                return;
+            }
 
-            } else {
-                if (locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
-                    //requestLocationUpdates(プロバイダー,通知の最小時間間隔(ms),通知の最小距離間隔(m),リスナー);
-                    locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 1, 10, locationListener);
-                    //タイムアウトを作るため、タイマーに位置情報取得キャンセルをスケジュールする
-                    TimerTask tt = new TimerTask() {
-                        @Override
-                        public void run() {
-                            locationManager.removeUpdates(locationListener);
-                        }
-                    };
-                    timer = new Timer(true);
-                    timer.schedule(tt, (long) 5 * 1000);
-                }
+            if (locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
+                //requestLocationUpdates(プロバイダー,通知の最小時間間隔(ms),通知の最小距離間隔(m),リスナー);
+                locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 1, 10, locationListener);
+                //タイムアウトを作るため、タイマーに位置情報取得キャンセルをスケジュールする
+                TimerTask tt = new TimerTask() {
+                    @Override
+                    public void run() {
+                        locationManager.removeUpdates(locationListener);
+                    }
+                };
+                timer = new Timer(true);
+                timer.schedule(tt, (long) 10 * 1000);
             }
         }
 
@@ -141,12 +145,14 @@ public class ResultActivity extends AppCompatActivity {
                                 "\",\"selfassessment\":\"" + selfAssessment +
                                 "\",\"flg\":\"" + (gyroFlg ? "1" : "0") +
                                 "\",\"rotationdata\":\"" + rotationData +
+                                "\",\"locationdata\":\"" + locationData +
                                 "\",\"weather_id\":\"" + "0" +
                                 "\"}";
                         HttpRequest_POST_Data httpRequestPost = new HttpRequest_POST_Data(this, postStr);
                         httpRequestPost.execute("https://zazethcare.cloud/Application/postdata.php");
                     })
                     .setNegativeButton("いいえ", (dialog, which) -> {
+                        System.out.println(locationData);
                         v.setEnabled(true);
                     })
                     .show();
