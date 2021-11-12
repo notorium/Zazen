@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/startScreen"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:elevation="5dp"
-    android:background="#E6424242">
+    android:background="#E6424242"
+    android:elevation="5dp">
 
 
     <TextView
@@ -15,7 +16,21 @@
         android:text="タップしてスタート"
         android:textColor="@color/white"
         android:textSize="20sp"
+        android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/attentionText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="お腹の膨らみ具合で記録をします。\n端末を手に乗せてお腹に付けてください。"
+        android:textColor="@color/white"
+        android:textSize="19sp"
+        android:gravity="center"
+        app:layout_constraintBottom_toTopOf="@+id/textView"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
