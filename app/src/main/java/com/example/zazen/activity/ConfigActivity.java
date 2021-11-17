@@ -132,8 +132,8 @@ public class ConfigActivity extends AppCompatActivity {
                         modeNum = 0;
                         editor.putInt("ModeNumber", modeNum).apply();
                         mode1.setBackgroundColor(getResources().getColor(R.color.red));
-                        mode2.setBackgroundColor(getResources().getColor(R.color.purple_500));
-                        mode3.setBackgroundColor(getResources().getColor(R.color.purple_500));
+                        mode2.setBackgroundColor(getResources().getColor(R.color.default_purple));
+                        mode3.setBackgroundColor(getResources().getColor(R.color.default_purple));
 
 
                         setTime.setProgress(0);
@@ -165,16 +165,16 @@ public class ConfigActivity extends AppCompatActivity {
             setGyro.setChecked(false);
             editor.putBoolean("GyroChecked", false).apply();
 
-            mode1.setBackgroundColor(getResources().getColor(R.color.purple_500));
+            mode1.setBackgroundColor(getResources().getColor(R.color.default_purple));
             mode2.setBackgroundColor(getResources().getColor(R.color.red));
-            mode3.setBackgroundColor(getResources().getColor(R.color.purple_500));
+            mode3.setBackgroundColor(getResources().getColor(R.color.default_purple));
         });
 
         mode3.setOnClickListener(v -> {
             modeNum = 2;
             editor.putInt("ModeNumber", modeNum).apply();
-            mode1.setBackgroundColor(getResources().getColor(R.color.purple_500));
-            mode2.setBackgroundColor(getResources().getColor(R.color.purple_500));
+            mode1.setBackgroundColor(getResources().getColor(R.color.default_purple));
+            mode2.setBackgroundColor(getResources().getColor(R.color.default_purple));
             mode3.setBackgroundColor(getResources().getColor(R.color.red));
 
             setTime.setEnabled(true);

@@ -21,21 +21,24 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:onClick="pose"
-            android:text="戻る" />
+            android:text="戻る"
+            android:textColor="@color/white" />
 
         <Button
             android:id="@+id/restart"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:onClick="pose"
-            android:text="やり直し" />
+            android:text="やり直し"
+            android:textColor="@color/white" />
 
         <Button
             android:id="@+id/finish"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:onClick="pose"
-            android:text="終了" />
+            android:text="終了"
+            android:textColor="@color/white" />
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
