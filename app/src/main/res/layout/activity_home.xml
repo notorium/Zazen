@@ -100,9 +100,10 @@
             android:elevation="-1dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.222"
+            app:layout_constraintVertical_bias="0.35"
             app:srcCompat="@drawable/title_image" />
 
 
