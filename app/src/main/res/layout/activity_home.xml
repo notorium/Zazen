@@ -33,7 +33,6 @@
             android:id="@+id/startButton"
             android:layout_width="250dp"
             android:layout_height="wrap_content"
-            android:onClick="config"
             android:text="始める"
             android:textColor="@color/white"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -106,6 +105,18 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="0.35"
             app:srcCompat="@drawable/title_image" />
+
+        <include
+            android:id="@+id/selectionScreen"
+            layout="@layout/selection_mode"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.498" />
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>
