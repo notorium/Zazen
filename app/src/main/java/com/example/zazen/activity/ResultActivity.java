@@ -4,7 +4,6 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -14,12 +13,6 @@ import android.widget.TextView;
 
 import com.example.zazen.R;
 import com.example.zazen.async.HttpRequest_POST_Data;
-
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Locale;
 
 public class ResultActivity extends AppCompatActivity {
 
@@ -44,7 +37,7 @@ public class ResultActivity extends AppCompatActivity {
         setContentView(R.layout.activity_result);
 
         assessment_seekBar = findViewById(R.id.time_seekBar);
-        commentText = findViewById(R.id.editText);
+        commentText = findViewById(R.id.timeEditText);
         loginScreen = findViewById(R.id.loginScreen);
         resultButton = findViewById(R.id.postResultButton);
         breathCount = findViewById(R.id.breathCount);

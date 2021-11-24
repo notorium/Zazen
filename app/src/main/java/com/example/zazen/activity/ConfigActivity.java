@@ -2,9 +2,6 @@ package com.example.zazen.activity;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.res.ColorStateList;
-import android.graphics.PorterDuff;
-import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -37,7 +34,7 @@ public class ConfigActivity extends AppCompatActivity {
 
         //各ツールの変数設定
         setTime = findViewById(R.id.time_seekBar);
-        setGyro = findViewById(R.id.gyroSwitch);
+        setGyro = findViewById(R.id.timerSwitch);
         setDevice = findViewById(R.id.device_radioGroup);
         Dset1 = findViewById(R.id.radioButton1);
         Dset2 = findViewById(R.id.radioButton2);

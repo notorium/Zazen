@@ -30,7 +30,7 @@
         app:layout_constraintTop_toBottomOf="@+id/textView4" />
 
     <EditText
-        android:id="@+id/editText"
+        android:id="@+id/timeEditText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="20dp"
@@ -54,8 +54,8 @@
         android:layout_marginTop="30dp"
         android:text="自己評価（5段階）"
         android:textSize="20sp"
-        app:layout_constraintStart_toStartOf="@+id/editText"
-        app:layout_constraintTop_toBottomOf="@+id/editText" />
+        app:layout_constraintStart_toStartOf="@+id/timeEditText"
+        app:layout_constraintTop_toBottomOf="@+id/timeEditText" />
 
     <SeekBar
         android:id="@+id/time_seekBar"

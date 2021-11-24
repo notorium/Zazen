@@ -88,6 +88,7 @@ public class StartActivity extends AppCompatActivity {
         if (loginStatus.getBoolean("LoginFlg", false)) {
             loginMenuButton.setText("ログアウト");
             loginMenuButton.setBackgroundColor(getResources().getColor(R.color.red));
+            nomalModeButton.setEnabled(true);
         } else {
             loginMenuButton.setText("ログイン");
             loginMenuButton.setBackgroundColor(getResources().getColor(R.color.green));
@@ -95,7 +96,7 @@ public class StartActivity extends AppCompatActivity {
             login_editor.putString("UserName", "ゲスト").apply();
             login_editor.putString("Password", "").apply();
             login_editor.putBoolean("LoginFlg", false).apply();
-
+            nomalModeButton.setEnabled(false);
         }
         userid.setText("ID:" + loginStatus.getString("UserId", ""));
         username.setText(loginStatus.getString("UserName", "ゲスト"));
@@ -111,6 +112,7 @@ public class StartActivity extends AppCompatActivity {
 
         userid.setText(loginStatus.getString("UserId", ""));
         username.setText(loginStatus.getString("UserName", "ゲスト"));
+        nomalModeButton.setEnabled(false);
         LoginFragment.loginButton.setEnabled(true);
         LoginFragment.passwordInput.setEnabled(true);
         LoginFragment.useridInput.setEnabled(true);
@@ -127,7 +129,7 @@ public class StartActivity extends AppCompatActivity {
                 startActivity(intent);
                 break;
             case "freeModeButton":
-                intent = new Intent(getApplicationContext(), ConfigActivity.class);
+                intent = new Intent(getApplicationContext(), ConfigActivity2.class);
                 startActivity(intent);
                 break;
         }
@@ -148,11 +150,13 @@ public class StartActivity extends AppCompatActivity {
                         .setTitle("モード")
                         .setMessage("モードの選択をします。\n" +
                                 "記録あり：\n　・座禅の記録を行います。\n" +
-                                "　・記録は任意でデータベースに送信でき、Web版にて記録を見ることができます。\n" +
+                                "　・Web版にて記録を見ることができます。\n" +
                                 "　・ジャイロ計測による呼吸の練習もできます。\n" +
+                                "　・このモードを選ぶにはログイン必須です。\n" +
                                 "記録なし：\n　・記録は残りません。\n" +
                                 "　・マインドフルネス瞑想など、瞑想等のみに集中したい方向けです。\n" +
-                                "　・時間も体勢も自分の好みに合わせて行うことができます。")
+                                "　・時間も体勢も自分の好みに合わせて行うことができます。\n" +
+                                "　・このモードはログインは必須ではありません。")
                         .setPositiveButton("閉じる", null)
                         .show();
                 break;
