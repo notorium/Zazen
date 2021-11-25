@@ -27,21 +27,21 @@ import androidx.appcompat.widget.Toolbar;
 
 import com.example.zazen.R;
 
-public class WebActivity extends AppCompatActivity {
+public class WebActivity2 extends AppCompatActivity {
     private WebView webView;
     private Toolbar toolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_web);
+        setContentView(R.layout.activity_web2);
 
         webView = findViewById(R.id.webView);
         toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
-        
+
 //        View decor = getWindow().getDecorView();
 //        decor.setSystemUiVisibility(View.SYSTEM_UI_FLAG_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_LAYOUT_STABLE | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
         webView.setDownloadListener((url, userAgent, contentDisposition, mimetype, contentLength) -> {
@@ -58,7 +58,7 @@ public class WebActivity extends AppCompatActivity {
         getWindow().setFlags(
                 WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED,
                 WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED);
-        webView.loadUrl("https://zazethcare.cloud/index.php");
+        webView.loadUrl("https://zazethcare.cloud/tutorial.php");
     }
 
     @Override
@@ -69,7 +69,7 @@ public class WebActivity extends AppCompatActivity {
             case android.R.id.home:
                 new AlertDialog.Builder(this)
                         .setCancelable(false)
-                        .setMessage("Webページを閉じてホーム画面へ戻りますか？")
+                        .setMessage("Webページを閉じて戻りますか？")
                         .setPositiveButton("はい", (dialog, which) -> {
                             this.finish();
                         })
@@ -87,7 +87,7 @@ public class WebActivity extends AppCompatActivity {
 
         new AlertDialog.Builder(this)
                 .setCancelable(false)
-                .setMessage("Webページを閉じてホーム画面へ戻りますか？")
+                .setMessage("Webページを閉じて戻りますか？")
                 .setPositiveButton("はい", (dialog, which) -> {
                     this.finish();
                 })

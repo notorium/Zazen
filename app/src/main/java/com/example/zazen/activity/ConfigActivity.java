@@ -262,5 +262,15 @@ public class ConfigActivity extends AppCompatActivity {
                 })
                 .setNegativeButton("いいえ", null)
                 .show();
+        new AlertDialog.Builder(this)
+                .setTitle("手順確認")
+                .setCancelable(false)
+                .setMessage("座禅の手順を確認しますか？")
+                .setPositiveButton("はい", (dialog, which) -> {
+                    Intent intent = new Intent(getApplicationContext(), WebActivity2.class);
+                    startActivity(intent);
+                })
+                .setNegativeButton("いいえ", null)
+                .show();
     }
 }
