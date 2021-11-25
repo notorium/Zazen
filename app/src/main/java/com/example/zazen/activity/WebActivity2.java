@@ -58,7 +58,7 @@ public class WebActivity2 extends AppCompatActivity {
         getWindow().setFlags(
                 WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED,
                 WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED);
-        webView.loadUrl("https://zazethcare.cloud/tutorial.php");
+        webView.loadUrl("https://zazethcare.cloud/tutorial_android.php");
     }
 
     @Override
