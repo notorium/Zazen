@@ -78,7 +78,7 @@ public class MainActivity2 extends AppCompatActivity {
         poseScreen = findViewById(R.id.poseScreen);
         tapScreen = findViewById(R.id.tapScreen);
 
-        attentionText.setText("記録は行われません。\n楽な体勢で行ってください。");
+        attentionText.setText("記録、計測は行われません。\n楽な体勢で行ってください。");
 
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
             soundPool = new SoundPool(5, AudioManager.STREAM_MUSIC, 0);
@@ -220,9 +220,9 @@ public class MainActivity2 extends AppCompatActivity {
                         .setPositiveButton("はい", (dialog, which) -> {
                             Intent intent = new Intent(getApplicationContext(), ResultActivity2.class);
                             SimpleDateFormat DF = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.JAPAN);
-                            long second = (countNumber / 1000) % 60;
-                            long minute = (countNumber / (1000 * 60)) % 60;
-                            long hour = (countNumber / (1000 * 60 * 60)) % 24;
+                            long second = ((countUpDownFlag ?firstTime - countNumber : countNumber) / 1000) % 60;
+                            long minute = ((countUpDownFlag ?firstTime - countNumber : countNumber) / (1000 * 60)) % 60;
+                            long hour = ((countUpDownFlag ?firstTime - countNumber : countNumber) / (1000 * 60 * 60)) % 24;
                             intent.putExtra("SetTime", String.format("%02d:%02d:%02d.%d", hour, minute, second, countNumber % 1000));
 //                                intent.putExtra("StartTime", DF.format(startTime));
                             intent.putExtra("Minute", (second == 0 ? "" : "約") + (hour * 60 + minute));
